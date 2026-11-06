@@ -195,6 +195,13 @@ button{font-family:inherit;cursor:pointer}
 .pfield label{display:block;font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
 .pfield input{border:0;background:transparent;color:var(--fg);font-family:var(--body);font-size:.98rem;width:100%;min-width:0}
 .pfield input:focus{outline:none}
+.about{font-size:.9rem;line-height:1.5;color:var(--fg);margin:2px 0 10px}
+.guide{margin:0 0 12px;padding-left:18px}
+.guide li{font-size:.88rem;line-height:1.45;margin:6px 0;color:var(--fg)}
+.tip{display:flex;gap:11px;align-items:flex-start;background:var(--surface2);border:1px solid var(--line);border-radius:13px;padding:12px 13px}
+.tip svg{width:23px;height:23px;color:var(--accent);flex:none;margin-top:1px}
+.tip .nm{font-weight:700;margin-bottom:2px}
+.tip .tipt{font-size:.86rem;line-height:1.45;color:var(--muted)}
 .navbtn[aria-current="true"]{color:var(--accent)}
 .hidden{display:none}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -829,6 +836,18 @@ button{font-family:inherit;cursor:pointer}
         (appUpd.avail?'<button class="startbtn" data-getapk><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0 4.5-4.5M12 15l-4.5-4.5M5 20h14"/></svg>Télécharger la mise à jour</button>':'')+
       '</div>'+
       '<div class="note">'+(appUpd.avail?'Une fois téléchargé, ouvre le fichier <b>Skifaut.apk</b> pour l\'installer par-dessus : tes réglages sont conservés.':'L\'APK est hébergé sur GitHub. Le bouton vérifie s\'il existe une version plus récente, puis la télécharge.')+'</div></div>';
+    // à propos
+    h+='<div class="card"><h2>À propos</h2>'+
+      '<p class="about">Skifaut t\'accompagne sur tout le domaine — <b>tout ce qu\'il faut quand il faut</b> : te repérer, trouver le meilleur itinéraire d\'un point à un autre, suivre tes journées et celles de tes amis, consulter les horaires et savoir où te restaurer.</p>'+
+      '<ul class="guide">'+
+        '<li><b>Carte</b> — ta position et l\'itinéraire optimal (quelle piste descendre, quelle remontée prendre), avec les alertes de fermeture.</li>'+
+        '<li><b>Démarrer le parcours</b> — guidage pas-à-pas : une notification à chaque changement de piste ou de remontée.</li>'+
+        '<li><b>Parcours &amp; Amis</b> — tes tracés du jour et ceux des amis qui acceptent de les partager.</li>'+
+        '<li><b>Horaires, Manger, Domaines</b> — remontées, pistes, navettes, restos, activités, et le domaine repéré par GPS.</li>'+
+      '</ul>'+
+      '<div class="tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="3"/><path d="M9 6 9.5 3h5l.5 3M9 18l.5 3h5l.5-3"/></svg>'+
+        '<div><div class="nm">Avec une montre connectée</div><div class="tipt">Autorise les notifications de guidage : les instructions s\'affichent directement à ton poignet — plus besoin de sortir ton téléphone en skiant.</div></div></div>'+
+      '</div>';
     return h;
   }
   var VIEWS={carte:carte,parcours:parcours,amis:amis,horaires:horaires,domaines:domaines,manger:manger,profil:profil};
