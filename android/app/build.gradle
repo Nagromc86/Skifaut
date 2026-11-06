@@ -7,8 +7,8 @@ android {
         applicationId "fr.nagromc86.skifaut"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode (project.hasProperty('verCode') ? project.verCode.toInteger() : 1)
+        versionName (project.hasProperty('verName') ? project.verName : "1.0")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,10 +16,21 @@ android {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        // Clé de signature dédiée au prototype : stable pour que les mises à jour
+        // s'installent par-dessus (même signature d'un build à l'autre).
+        release {
+            storeFile file('../keystore/skifaut.jks')
+            storePassword 'skifaut-proto-2026'
+            keyAlias 'skifaut'
+            keyPassword 'skifaut-proto-2026'
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 }

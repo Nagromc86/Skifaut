@@ -38,14 +38,16 @@ jobs:
       - name: Capacitor sync
         run: npx cap sync android
 
-      - name: Build debug APK
+      - name: Build signed release APK
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleRelease --no-daemon \
+            -PverCode=${{ github.run_number }} \
+            -PverName=$(git rev-parse --short HEAD)
 
       - name: Rename APK
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk Skifaut.apk
+        run: cp android/app/build/outputs/apk/release/app-release.apk Skifaut.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
