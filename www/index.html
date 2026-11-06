@@ -532,6 +532,13 @@ button{font-family:inherit;cursor:pointer}
     }).catch(function(){appUpd.checking=false;appUpd.err=true;if(manual)toast("Impossible de vérifier la mise à jour.");if(state.tab==="profil")render();});
   }
   function getApk(){openExternal(APK_URL);toast("Téléchargement de la mise à jour…");}
+  function shareApp(){
+    var txt="Skifaut — tout ce qu'il faut quand il faut 🎿 Installe l'appli :";
+    var Sh=capPlugin("Share");
+    if(Sh&&Sh.share){Sh.share({title:"Skifaut",text:txt,url:APK_URL,dialogTitle:"Partager Skifaut"}).catch(function(){});return;}
+    if(navigator.share){navigator.share({title:"Skifaut",text:txt,url:APK_URL}).catch(function(){});return;}
+    try{navigator.clipboard.writeText(txt+" "+APK_URL);toast("Lien copié dans le presse-papiers.");}catch(e){toast(APK_URL);}
+  }
 
   /* ---- navigation guidée pas-à-pas ---- */
   var nav=null, geoState={busy:false,near:null,me:null};
@@ -848,6 +855,10 @@ button{font-family:inherit;cursor:pointer}
       '<div class="tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="3"/><path d="M9 6 9.5 3h5l.5 3M9 18l.5 3h5l.5-3"/></svg>'+
         '<div><div class="nm">Avec une montre connectée</div><div class="tipt">Autorise les notifications de guidage : les instructions s\'affichent directement à ton poignet — plus besoin de sortir ton téléphone en skiant.</div></div></div>'+
       '</div>';
+    // partager
+    h+='<div class="card"><h2>Partager</h2>'+
+      '<div class="navactions"><button class="startbtn" data-share><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5 15.4 17.5M15.4 6.5 8.6 10.5"/></svg>Partager Skifaut</button></div>'+
+      '<div class="note">Envoie l\'appli à tes potes de ski : le lien d\'installation de la dernière version.</div></div>';
     return h;
   }
   var VIEWS={carte:carte,parcours:parcours,amis:amis,horaires:horaires,domaines:domaines,manger:manger,profil:profil};
@@ -870,13 +881,14 @@ button{font-family:inherit;cursor:pointer}
   }
 
   document.addEventListener("click",function(ev){
-    var t=ev.target.closest("[data-tab],[data-crit],[data-level],[data-node],[data-join],[data-dl],[data-day],[data-hcat],[data-fav],[data-go],[data-nav],[data-nav-start],[data-nav-stop],[data-locate],[data-checkupd],[data-getapk],[data-home-go],[data-home-edit],#swap,#share,#ft");
+    var t=ev.target.closest("[data-tab],[data-crit],[data-level],[data-node],[data-join],[data-dl],[data-day],[data-hcat],[data-fav],[data-go],[data-nav],[data-nav-start],[data-nav-stop],[data-locate],[data-checkupd],[data-getapk],[data-share],[data-home-go],[data-home-edit],#swap,#share,#ft");
     if(!t)return;var d=t.dataset;
     if(t.hasAttribute("data-nav-start")){navStart(t.getAttribute("data-nav-start")==="sim");return;}
     if(t.hasAttribute("data-nav-stop")){navStop();return;}
     if(t.hasAttribute("data-locate")){locate();return;}
     if(t.hasAttribute("data-checkupd")){checkUpdate(true);return;}
     if(t.hasAttribute("data-getapk")){getApk();return;}
+    if(t.hasAttribute("data-share")){shareApp();return;}
     if(d.tab){state.tab=d.tab;render();window.scrollTo(0,0);return;}
     if(d.hcat){state.hcat=d.hcat;render();return;}
     if(d.crit){state.crit=d.crit;render();return;}
