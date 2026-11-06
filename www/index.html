@@ -1,0 +1,629 @@
+<title>Skifaut</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@600;700&display=swap">
+<style>
+/* Layout: a single phone-width app column — sticky mountain header, scrolling view, fixed bottom nav.
+   Palette: bluebird-day snow (light) / night-piste navy (dark); glacier teal brand, piste colours as data. */
+:root{
+  --bg:#eaf1f6; --surface:#ffffff; --surface2:#dfe9f1; --fg:#102335; --muted:#5b7389; --line:#ccdae6;
+  --accent:#0a97ab; --accent-ink:#ffffff; --accent-soft:#d3eef1;
+  --vert:#2e9e54; --bleu:#2f6fe0; --rouge:#df3b3b; --noir:#141b24; --warn:#c9771f; --closed:#9fb0bf;
+  --warn-bg:#fbeeda; --crit:#c62a2a; --crit-bg:#fbe0e0; --bus:#7a5cc0;
+  --sky1:#cfe6f2; --sky2:#eef6fb; --snow:#ffffff;
+  --disp:"Barlow Semi Condensed",Impact,sans-serif; --body:"Barlow","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0b1520; --surface:#132131; --surface2:#1c2d40; --fg:#e9f1f8; --muted:#90a6ba; --line:#283b4f;
+  --accent:#25c0d1; --accent-ink:#06222a; --accent-soft:#113640;
+  --vert:#46c76a; --bleu:#5f95f3; --rouge:#ff5b5b; --noir:#aeb9c6; --warn:#eda24a; --closed:#55697b;
+  --warn-bg:#3a2c16; --crit:#ff6b6b; --crit-bg:#3a1c1c; --bus:#a78bda;
+  --sky1:#12283b; --sky2:#0d1b28; --snow:#22384d;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b1520; --surface:#132131; --surface2:#1c2d40; --fg:#e9f1f8; --muted:#90a6ba; --line:#283b4f;
+  --accent:#25c0d1; --accent-ink:#06222a; --accent-soft:#113640;
+  --vert:#46c76a; --bleu:#5f95f3; --rouge:#ff5b5b; --noir:#aeb9c6; --warn:#eda24a; --closed:#55697b;
+  --warn-bg:#3a2c16; --crit:#ff6b6b; --crit-bg:#3a1c1c; --bus:#a78bda;
+  --sky1:#12283b; --sky2:#0d1b28; --snow:#22384d;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
+.app{max-width:500px;margin:0 auto;min-height:100vh;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+h1,h2,h3{font-family:var(--disp);font-weight:700;margin:0;letter-spacing:.2px;text-wrap:balance}
+button{font-family:inherit;cursor:pointer}
+/* top bar */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:12px 2px 10px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.wordmark{display:flex;align-items:center;gap:8px;font-family:var(--disp);font-weight:700;font-size:1.5rem;letter-spacing:.3px}
+.wordmark .mk{width:26px;height:26px;flex:none}
+.wordmark b{color:var(--accent)}
+.dpill{display:flex;align-items:center;gap:6px;background:var(--accent-soft);color:var(--accent);
+  border-radius:999px;padding:5px 11px;font-size:.78rem;font-weight:600}
+.dpill svg{width:13px;height:13px}
+.sub{color:var(--muted);font-size:.72rem;font-weight:500;letter-spacing:.3px;margin-top:2px}
+/* map */
+.map{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;margin-bottom:14px}
+.map svg{display:block;width:100%;height:auto}
+.maplabel{position:absolute;left:12px;top:12px;background:var(--surface);border:1px solid var(--line);
+  border-radius:10px;padding:6px 10px;font-size:.74rem;color:var(--muted);font-weight:600;max-width:60%}
+.maplabel b{color:var(--fg)}
+.legend{position:absolute;right:12px;bottom:12px;display:flex;gap:9px;background:var(--surface);
+  border:1px solid var(--line);border-radius:10px;padding:6px 9px;font-size:.68rem;color:var(--muted);font-weight:600}
+.legend span{display:flex;align-items:center;gap:4px}
+.legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
+/* cards */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:15px;margin-bottom:14px}
+.card h2{font-size:1.12rem;margin-bottom:12px}
+.card h2.row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+/* route planner */
+.od{display:grid;grid-template-columns:1fr 34px;gap:9px;align-items:center}
+.fields{display:flex;flex-direction:column;gap:9px;min-width:0}
+.field{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:3px 11px}
+.field .dot{width:12px;height:12px;border-radius:50%;flex:none}
+.field .dot.a{background:var(--accent)}
+.field .dot.b{background:var(--rouge)}
+.field label{font-size:.62rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:600;display:block}
+.field select{width:100%;border:0;background:transparent;color:var(--fg);font-family:var(--body);font-size:.98rem;font-weight:600;padding:3px 0 5px;appearance:none;min-width:0}
+.field select:focus{outline:none}
+.swap{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--muted);display:flex;align-items:center;justify-content:center}
+.swap svg{width:16px;height:16px}
+.lbl{font-size:.64rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:600;margin:14px 0 7px}
+.seg{display:flex;gap:7px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;
+  padding:7px 13px;font-size:.84rem;font-weight:600;line-height:1}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chip:focus-visible,.navbtn:focus-visible,select:focus-visible,.linkbtn:focus-visible,.join:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* route result */
+.summary{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--accent-soft);
+  border-radius:14px;padding:12px 14px;margin-bottom:4px}
+.summary .big{font-family:var(--disp);font-weight:700;font-size:1.7rem;color:var(--accent);line-height:1;font-variant-numeric:tabular-nums}
+.summary .meta{font-size:.82rem;color:var(--fg);font-weight:500}
+.summary .meta b{font-family:var(--disp);font-size:1.02rem}
+.alt{margin-left:auto;text-align:right;font-size:.78rem;color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums}
+.alt b{color:var(--fg);font-family:var(--disp);font-size:1rem}
+.steps{list-style:none;margin:14px 0 0;padding:0;position:relative}
+.steps::before{content:"";position:absolute;left:14px;top:12px;bottom:28px;width:2px;background:var(--line)}
+.step{position:relative;display:flex;gap:13px;padding:7px 0;align-items:flex-start}
+.step .mk{width:30px;height:30px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+  background:var(--surface);border:2px solid var(--line);z-index:1;position:relative}
+.step .mk .disc{width:15px;height:15px;border-radius:50%}
+.step .mk svg{width:16px;height:16px;color:var(--muted)}
+.step .mk.fin{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.step .bd{min-width:0;padding-top:3px}
+.step .bd .act{font-weight:600}
+.step .bd .act .nm{font-family:var(--disp);font-size:1.08rem;font-weight:700}
+.step .bd .ln{display:flex;align-items:center;gap:7px;margin-top:3px;flex-wrap:wrap}
+.tag{display:inline-flex;align-items:center;gap:5px;font-size:.74rem;font-weight:600;color:var(--muted)}
+.tag .disc{width:11px;height:11px;border-radius:50%}
+.tag .sq{width:11px;height:11px;border-radius:3px}
+.d-vert{background:var(--vert)}.d-bleu{background:var(--bleu)}.d-rouge{background:var(--rouge)}.d-noir{background:var(--noir)}
+.time{font-size:.74rem;color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums}
+.alert{display:inline-flex;align-items:center;gap:6px;font-size:.76rem;font-weight:600;border-radius:8px;padding:4px 9px;line-height:1.25}
+.alert svg{width:14px;height:14px;flex:none}
+.alert.warn{color:var(--warn);background:var(--warn-bg)}
+.alert.crit{color:var(--crit);background:var(--crit-bg)}
+.alert.banner{display:flex;width:100%;margin-top:10px;padding:9px 12px;font-size:.84rem}
+.alert.banner b{font-family:var(--disp);font-weight:700}
+.nowline{font-size:.74rem;color:var(--muted);font-weight:600;margin-top:8px}
+.homebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:15px}
+.homego{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:9px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);border-radius:12px;padding:11px 14px;font-weight:600;font-size:.95rem}
+.homego svg{width:17px;height:17px;flex:none}
+.linklike{border:0;background:transparent;color:var(--accent);font-weight:600;font-size:.86rem;display:inline-flex;align-items:center;gap:6px;padding:6px 2px}
+.linklike svg{width:16px;height:16px}
+.step .mk.warnmk{border-color:var(--warn)}
+.step .mk.critmk{border-color:var(--crit)}
+.empty{text-align:center;color:var(--muted);padding:22px 10px}
+.empty b{color:var(--fg);font-family:var(--disp);font-size:1.1rem;display:block;margin-bottom:5px}
+/* lists (friends / station / domains) */
+.rowitem{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
+.rowitem:first-of-type{border-top:0}
+.av{width:38px;height:38px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+  font-family:var(--disp);font-weight:700;color:#fff;font-size:1rem}
+.rowitem .info{min-width:0;flex:1}
+.rowitem .info .nm{font-weight:600}
+.rowitem .info .mt{font-size:.78rem;color:var(--muted)}
+.join{border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:999px;padding:6px 13px;font-size:.8rem;font-weight:600;flex:none}
+.state{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600}
+.state i{width:9px;height:9px;border-radius:50%;flex:none}
+.on i{background:var(--vert)}.on{color:var(--vert)}
+.off i{background:var(--closed)}.off{color:var(--muted)}
+.statline{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+.stat{flex:1;min-width:120px;background:var(--surface2);border-radius:13px;padding:11px 13px}
+.stat .n{font-family:var(--disp);font-weight:700;font-size:1.5rem;line-height:1;font-variant-numeric:tabular-nums}
+.stat .k{font-size:.74rem;color:var(--muted);font-weight:600;margin-top:3px}
+.note{font-size:.76rem;color:var(--muted);background:var(--surface2);border-radius:11px;padding:9px 12px;margin-top:12px}
+.note b{color:var(--fg)}
+.toggle{display:flex;align-items:center;gap:10px;justify-content:space-between;background:var(--surface2);border-radius:13px;padding:11px 14px;margin-bottom:12px}
+.sw{width:46px;height:27px;border-radius:999px;border:0;background:var(--closed);position:relative;flex:none;transition:background .15s}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;background:#fff;transition:transform .15s}
+.sw[aria-pressed="true"]{background:var(--accent)}
+.sw[aria-pressed="true"]::after{transform:translateX(19px)}
+.linkbtn{border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);border-radius:12px;padding:10px 15px;font-size:.9rem;font-weight:600;width:100%}
+.linkbtn.done{background:transparent;color:var(--vert);border-color:var(--vert)}
+.dl{border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:999px;padding:6px 13px;font-size:.8rem;font-weight:600;flex:none}
+.dl.done{border-color:var(--line);color:var(--muted)}
+.gps{display:flex;align-items:center;gap:12px;background:var(--accent-soft);border-radius:14px;padding:13px;margin-bottom:14px}
+.gps svg{width:26px;height:26px;color:var(--accent);flex:none}
+.gps .nm{font-family:var(--disp);font-weight:700;font-size:1.15rem}
+.gps .mt{font-size:.78rem;color:var(--muted)}
+/* bottom nav */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:25;background:var(--surface);border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom,0px)}
+.navin{max-width:500px;margin:0 auto;display:grid;grid-template-columns:repeat(6,1fr);
+  padding-left:max(4px,env(safe-area-inset-left,0px));padding-right:max(4px,env(safe-area-inset-right,0px))}
+.navbtn{border:0;background:transparent;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 1px 8px;font-size:.62rem;font-weight:600}
+.navbtn svg{width:21px;height:21px}
+.search{display:flex;align-items:center;gap:9px;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:9px 12px;margin-bottom:13px}
+.search svg{width:18px;height:18px;color:var(--muted);flex:none}
+.search input{border:0;background:transparent;color:var(--fg);font-family:var(--body);font-size:.98rem;width:100%;min-width:0}
+.search input:focus{outline:none}
+.star{border:0;background:transparent;color:var(--closed);flex:none;padding:3px}
+.star svg{width:23px;height:23px}
+.star[aria-pressed="true"]{color:#e8a81f}
+.price{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:600}
+.ygo{border:1px solid var(--line);background:var(--surface);color:var(--accent);border-radius:999px;padding:6px 12px;font-size:.8rem;font-weight:600;flex:none}
+.rside{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none}
+.navbtn[aria-current="true"]{color:var(--accent)}
+.hidden{display:none}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="app">
+  <header class="topbar">
+    <div>
+      <div class="wordmark">
+        <svg class="mk" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 27 L13 8 L18 17 L21 12 L29 27 Z" fill="var(--accent)"/><path d="M13 8 L18 17 L15.5 17 L11.5 11 Z" fill="var(--snow)" opacity=".85"/></svg>
+        <span>Ski<b>faut</b></span>
+      </div>
+      <div class="sub">Tout ce qu'il faut quand il faut</div>
+    </div>
+    <div class="dpill" id="dpill" title="Carte disponible hors-ligne">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+      <span>Val Frisson · hors-ligne</span>
+    </div>
+  </header>
+
+  <div id="view"></div>
+</div>
+
+<nav class="nav">
+  <div class="navin" id="nav"></div>
+</nav>
+
+<script id="main">
+(function(){
+  var N={
+    sommet:{x:500,y:60,name:"Sommet des Aigles",alt:3000,lx:0,ly:-16,anchor:"middle"},
+    col:{x:270,y:168,name:"Col de Chavière",alt:2800,lx:-13,ly:4,anchor:"end"},
+    crete:{x:736,y:150,name:"Crête Est",alt:2850,lx:13,ly:4,anchor:"start"},
+    plateau:{x:500,y:318,name:"Plateau",alt:2500,lx:15,ly:4,anchor:"start"},
+    marmottes:{x:222,y:362,name:"Gare des Marmottes",alt:2400,lx:-13,ly:4,anchor:"end"},
+    rocher:{x:778,y:346,name:"Rocher Noir",alt:2450,lx:13,ly:4,anchor:"start"},
+    lac:{x:505,y:500,name:"Croisée du Lac",alt:2100,lx:-15,ly:2,anchor:"end"},
+    bois:{x:300,y:562,name:"Bois Joli",alt:2000,lx:-13,ly:4,anchor:"end"},
+    mi:{x:738,y:542,name:"Mi-station",alt:1950,lx:13,ly:4,anchor:"start"},
+    village:{x:500,y:708,name:"Val Frisson",alt:1850,lx:0,ly:26,anchor:"middle"},
+    esserts:{x:293,y:708,name:"Les Esserts",alt:1800,lx:-13,ly:4,anchor:"end"}
+  };
+  var E=[
+    {id:"e1",a:"sommet",b:"col",k:"piste",n:"Aigle",d:"rouge",t:4},
+    {id:"e2",a:"sommet",b:"crete",k:"piste",n:"Corniche",d:"noir",t:5},
+    {id:"e3",a:"col",b:"plateau",k:"piste",n:"Edelweiss",d:"bleu",t:3},
+    {id:"e4",a:"crete",b:"rocher",k:"piste",n:"Chamois",d:"rouge",t:4},
+    {id:"e5",a:"crete",b:"lac",k:"piste",n:"Panorama",d:"bleu",t:7},
+    {id:"e6",a:"plateau",b:"lac",k:"piste",n:"Myrtille",d:"bleu",t:4},
+    {id:"e7",a:"plateau",b:"marmottes",k:"piste",n:"Marmotte",d:"vert",t:3},
+    {id:"e8",a:"rocher",b:"lac",k:"piste",n:"Aiguille",d:"rouge",t:3},
+    {id:"e9",a:"rocher",b:"mi",k:"piste",n:"Combe Noire",d:"noir",t:3,closed:true},
+    {id:"e10",a:"marmottes",b:"bois",k:"piste",n:"Sapins",d:"bleu",t:3},
+    {id:"e11",a:"lac",b:"village",k:"piste",n:"Retour Village",d:"vert",t:5},
+    {id:"e12",a:"bois",b:"village",k:"piste",n:"Forêt",d:"bleu",t:4},
+    {id:"e13",a:"mi",b:"village",k:"piste",n:"Doucy",d:"rouge",t:4},
+    {id:"l1",a:"village",b:"mi",k:"lift",n:"TC Grand Bois",sub:"Télécabine",t:6,h:"9h00 – 17h00"},
+    {id:"l2",a:"mi",b:"sommet",k:"lift",n:"TC du Sommet",sub:"Télécabine",t:8,h:"9h15 – 16h30"},
+    {id:"l3",a:"lac",b:"plateau",k:"lift",n:"TSD du Lac",sub:"Télésiège",t:6,h:"9h00 – 16h45"},
+    {id:"l4",a:"marmottes",b:"col",k:"lift",n:"TSD des Aigles",sub:"Télésiège",t:7,h:"9h00 – 16h30"},
+    {id:"l5",a:"lac",b:"crete",k:"lift",n:"TSD de la Crête",sub:"Télésiège",t:7,closed:true,h:"9h00 – 16h30"},
+    {id:"l6",a:"village",b:"marmottes",k:"lift",n:"TS des Marmottes",sub:"Télésiège",t:5,h:"8h45 – 17h00"},
+    {id:"l7",a:"bois",b:"plateau",k:"lift",n:"TSD Bois Joli",sub:"Télésiège",t:6,h:"9h00 – 16h45"},
+    {id:"b1",a:"village",b:"esserts",k:"bus",n:"Navette Les Esserts",sub:"Navette",t:9,h:"8h30 – 19h00"},
+    {id:"b2",a:"esserts",b:"village",k:"bus",n:"Navette Les Esserts",sub:"Navette",t:9,h:"8h30 – 19h00"}
+  ];
+  var RANK={vert:1,bleu:2,rouge:3,noir:4};
+  var DIFFLBL={vert:"Verte",bleu:"Bleue",rouge:"Rouge",noir:"Noire"};
+  var LEVELS={deb:{cap:2,lbl:"Débutant"},int:{cap:3,lbl:"Intermédiaire"},exp:{cap:4,lbl:"Expert"}};
+  var CRITS={rapide:"Le plus rapide",remontees:"Le moins de remontées",facile:"Le plus facile"};
+  var FRIENDS=[
+    {init:"L",name:"Léa",at:"lac",zone:"Croisée du Lac",seen:"il y a 1 min",c:"#e0589b",shareTracks:true,track:["sommet","col","plateau","marmottes","bois","village"]},
+    {init:"T",name:"Tom",at:"plateau",zone:"Plateau",seen:"il y a 4 min",c:"#e0892b",shareTracks:true,track:["village","mi","sommet","crete","rocher","lac","village"]},
+    {init:"S",name:"Samir",at:"village",zone:"Val Frisson",seen:"il y a 12 min",c:"#6a72e0",shareTracks:false,track:["plateau","lac","village","marmottes","bois","village"]}
+  ];
+  var DAYS=[
+    {id:"auj",lbl:"Auj.",date:"Aujourd'hui · 6 nov",km:"21,4 km",deniv:"3 650 m",pistes:8,lifts:2,temps:"3 h 40",
+     track:["sommet","col","plateau","lac","village","mi","sommet","crete","rocher","lac","village"]},
+    {id:"hier",lbl:"Hier",date:"Hier · 5 nov",km:"14,8 km",deniv:"2 400 m",pistes:6,lifts:2,temps:"2 h 55",
+     track:["village","mi","sommet","col","plateau","marmottes","bois","village"]},
+    {id:"sam",lbl:"Sam.",date:"Samedi · 2 nov",km:"9,2 km",deniv:"1 500 m",pistes:4,lifts:3,temps:"2 h 10",
+     track:["village","marmottes","bois","plateau","lac","village"]}
+  ];
+  var RESTOS=[
+    {id:"r1",name:"La Table du Sommet",at:"sommet",kind:"Restaurant d'altitude",price:"€€€",tag:"Vue panoramique à 360°",open:true,h:"9h00 – 16h30"},
+    {id:"r2",name:"Le Refuge du Plateau",at:"plateau",kind:"Self montagnard",price:"€€",tag:"Grande terrasse plein sud",open:true,h:"11h30 – 16h00"},
+    {id:"r3",name:"Chez Marmotte",at:"marmottes",kind:"Snack & gaufres",price:"€",tag:"Pause rapide entre deux pistes",open:true,h:"9h00 – 16h45"},
+    {id:"r4",name:"La Croisée Gourmande",at:"lac",kind:"Brasserie",price:"€€",tag:"Burgers savoyards, au pied des pistes",open:true,h:"9h00 – 17h00"},
+    {id:"r5",name:"Le Bois Joli",at:"bois",kind:"Crêperie",price:"€",tag:"Au calme en forêt",open:false,h:"11h30 – 16h30"},
+    {id:"r6",name:"L'Étable",at:"village",kind:"Restaurant savoyard",price:"€€€",tag:"Fondue, raclette, tartiflette",open:true,h:"12h00 – 14h30 · 19h00 – 22h30"},
+    {id:"r7",name:"Le Rocher Café",at:"rocher",kind:"Bar d'altitude",price:"€€",tag:"Transats au soleil",open:true,h:"10h00 – 16h30"}
+  ];
+  var NAVETTES=[
+    {n:"Navette Les Esserts",route:"Val Frisson ↔ Les Esserts",freq:"toutes les 15 min",h:"8h30 – 19h00",node:"esserts"},
+    {n:"Navette des Pistes",route:"Centre ↔ Télécabine Grand Bois",freq:"toutes les 10 min",h:"8h45 – 18h30",node:"village"},
+    {n:"Navette de nuit",route:"Val Frisson ↔ Les Esserts",freq:"toutes les 30 min",h:"19h00 – 00h30",node:"esserts"}
+  ];
+  var ACTIVITES=[
+    {n:"Piste de luge des Marmottes",loc:"Gare des Marmottes",h:"10h00 – 17h00",node:"marmottes"},
+    {n:"Patinoire du village",loc:"Val Frisson",h:"14h00 – 19h00 · 20h30 – 22h30",node:"village"},
+    {n:"Espace aqualudique",loc:"Val Frisson",h:"10h00 – 20h00",node:"village"},
+    {n:"École de ski (ESF)",loc:"Front de neige",h:"9h00 – 17h00",node:"village"},
+    {n:"Parapente biplace",loc:"Sommet des Aigles",h:"Sur réservation",resa:true,node:"sommet"},
+    {n:"Sentiers raquettes",loc:"Bois Joli",h:"Accès libre · 9h00 – 16h30",node:"bois"}
+  ];
+  var DOMAINS=[
+    {n:"Les 3 Vallées",d:"Savoie",s:"31 Mo"},{n:"Paradiski",d:"Savoie",s:"24 Mo"},
+    {n:"Chamonix Mont-Blanc",d:"Haute-Savoie",s:"18 Mo"},{n:"L'Alpe d'Huez",d:"Isère",s:"16 Mo"},
+    {n:"Les 2 Alpes",d:"Isère",s:"15 Mo"},{n:"Serre Chevalier",d:"Hautes-Alpes",s:"17 Mo"},
+    {n:"Grand Tourmalet",d:"Hautes-Pyrénées",s:"12 Mo"}
+  ];
+
+  var state={tab:"carte",from:"lac",to:"sommet",crit:"rapide",level:"exp",share:true,dl:{},day:"auj",ft:true,q:"",fav:{r4:true},navette:true,home:"esserts",homeEdit:false,hcat:"remontees",hq:""};
+  try{var s=JSON.parse(localStorage.getItem("skifaut")||"{}");Object.assign(state,s);}catch(e){}
+  function persist(){try{localStorage.setItem("skifaut",JSON.stringify(state));}catch(e){}}
+
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+  function neighbours(){var m={};for(var k in N)m[k]=[];E.forEach(function(e){m[e.a].push(e);});return m;}
+  function allowed(e){
+    if(e.closed)return false;
+    if(e.k==="bus"&&!state.navette)return false;
+    if(e.k==="piste"&&RANK[e.d]>LEVELS[state.level].cap)return false;
+    return true;
+  }
+  function cost(e){
+    if(state.crit==="rapide")return e.t;
+    if(state.crit==="remontees")return (e.k==="lift"?100:0)+e.t;
+    return (e.k==="piste"?{vert:1,bleu:6,rouge:30,noir:150}[e.d]:3)+e.t*0.01;
+  }
+  function route(from,to){
+    if(from===to)return [];
+    var adj=neighbours(),dist={},prev={},seen={},keys=Object.keys(N);
+    keys.forEach(function(k){dist[k]=Infinity;});dist[from]=0;
+    for(var i=0;i<keys.length;i++){
+      var u=null,best=Infinity;
+      keys.forEach(function(k){if(!seen[k]&&dist[k]<best){best=dist[k];u=k;}});
+      if(u===null)break;seen[u]=1;if(u===to)break;
+      adj[u].forEach(function(e){if(!allowed(e))return;var nd=dist[u]+cost(e);if(nd<dist[e.b]){dist[e.b]=nd;prev[e.b]={e:e,from:u};}});
+    }
+    if(dist[to]===Infinity)return null;
+    var path=[],c=to;while(c!==from){var p=prev[c];if(!p)return null;path.unshift(p.e);c=p.from;}
+    return path;
+  }
+
+  /* ---- closing-time alerts ---- */
+  var NOW=16*60+10; // heure simulée pour la démo
+  function fmt(m){var hh=Math.floor(m/60),mm=m%60;return hh+"h"+(mm<10?"0":"")+mm;}
+  function closeMin(h){var p=(h.split("–")[1]||h).trim().match(/(\d+)h(\d+)/);return (+p[1])*60+(+p[2]);}
+  function warnIcon(){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v4M12 17.4v.01"/></svg>';}
+  function routeAlerts(rt){
+    var acc=0,per={},worst=null;
+    rt.forEach(function(e){
+      if(e.k==="lift"){
+        var close=closeMin(e.h),arr=NOW+acc,rem=close-arr,a=null;
+        if(rem<=0)a={lvl:"crit",rem:rem,txt:"fermée à ton arrivée ("+fmt(close)+")"};
+        else if(rem<=15)a={lvl:"crit",rem:rem,txt:"ferme à "+fmt(close)+" — dans "+rem+" min, dépêche-toi"};
+        else if(rem<=60)a={lvl:"warn",rem:rem,txt:"ferme à "+fmt(close)+" — dans "+rem+" min à ton arrivée"};
+        if(a){a.name=e.n;per[e.id]=a;if(!worst||(a.lvl==="crit"&&worst.lvl!=="crit")||(a.lvl===worst.lvl&&a.rem<worst.rem))worst=a;}
+      }
+      acc+=e.t;
+    });
+    return {per:per,worst:worst};
+  }
+
+  /* ---- map ---- */
+  function edgePath(e){var A=N[e.a],B=N[e.b];return "M"+A.x+" "+A.y+" L"+B.x+" "+B.y;}
+  function renderMap(){
+    var rt=route(state.from,state.to),onRoute={};
+    if(rt)rt.forEach(function(e){onRoute[e.id]=1;});
+    var al=rt&&rt.length?routeAlerts(rt):{per:{}};
+    var svg='<svg viewBox="0 0 1000 780" role="img" aria-label="Carte du domaine skiable">';
+    svg+='<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--sky1)"/><stop offset="1" stop-color="var(--sky2)"/></linearGradient></defs>';
+    svg+='<rect width="1000" height="780" fill="url(#sky)"/>';
+    svg+='<path d="M0 300 L250 120 L430 260 L620 90 L1000 330 L1000 780 L0 780 Z" fill="var(--snow)" opacity=".55"/>';
+    // base edges
+    E.forEach(function(e){
+      if(e.k==="bus"&&e.a>e.b)return;
+      var base=e.k==="lift"?"var(--closed)":e.k==="bus"?"var(--bus)":("var(--"+e.d+")");
+      var cls=e.closed?"var(--closed)":base;
+      var op=e.closed?.45:(e.k==="bus"&&!state.navette?.4:(onRoute[e.id]?.25:.9));
+      var dash=e.k==="lift"?'stroke-dasharray="2 9" stroke-width="4"':e.k==="bus"?'stroke-dasharray="1.5 7" stroke-width="4"':'stroke-width="6"';
+      svg+='<path d="'+edgePath(e)+'" fill="none" stroke="'+cls+'" '+dash+' stroke-linecap="round" opacity="'+op+'"/>';
+    });
+    // route casing + line
+    if(rt){
+      rt.forEach(function(e){svg+='<path d="'+edgePath(e)+'" fill="none" stroke="var(--surface)" stroke-width="13" stroke-linecap="round"/>';});
+      rt.forEach(function(e){
+        var dash=e.k==="lift"?'stroke-dasharray="1 7"':e.k==="bus"?'stroke-dasharray="1 6"':'';
+        var col=al.per[e.id]?(al.per[e.id].lvl==="crit"?"var(--crit)":"var(--warn)"):"var(--accent)";
+        svg+='<path d="'+edgePath(e)+'" fill="none" stroke="'+col+'" stroke-width="8" '+dash+' stroke-linecap="round"/>';
+      });
+    }
+    // lift stations (small squares) + junction nodes
+    for(var k in N){
+      var nd=N[k],isLift=E.some(function(e){return e.k==="lift"&&(e.a===k||e.b===k);});
+      svg+='<circle cx="'+nd.x+'" cy="'+nd.y+'" r="7" fill="var(--surface)" stroke="var(--muted)" stroke-width="2.5"/>';
+      svg+='<text x="'+(nd.x+nd.lx)+'" y="'+(nd.y+nd.ly)+'" text-anchor="'+nd.anchor+'" font-family="var(--body)" font-size="19" font-weight="600" fill="var(--fg)" paint-order="stroke" stroke="var(--surface)" stroke-width="4">'+esc(nd.name)+'</text>';
+    }
+    // friends
+    if(state.share)FRIENDS.forEach(function(f){var nd=N[f.at];svg+='<g><circle cx="'+(nd.x)+'" cy="'+(nd.y-20)+'" r="11" fill="'+f.c+'" stroke="var(--surface)" stroke-width="2.5"/><text x="'+nd.x+'" y="'+(nd.y-16)+'" text-anchor="middle" font-family="var(--disp)" font-size="13" font-weight="700" fill="#fff">'+esc(f.init[0])+'</text></g>';});
+    // user position (départ)
+    var u=N[state.from];
+    svg+='<circle cx="'+u.x+'" cy="'+u.y+'" r="15" fill="var(--accent)" opacity=".28"><animate attributeName="r" values="12;21;12" dur="2.4s" repeatCount="indefinite"/></circle>';
+    svg+='<circle cx="'+u.x+'" cy="'+u.y+'" r="8.5" fill="var(--accent)" stroke="var(--surface)" stroke-width="3"/>';
+    // clickable hit areas -> set arrivée
+    for(var k2 in N){var n2=N[k2];svg+='<circle cx="'+n2.x+'" cy="'+n2.y+'" r="26" fill="transparent" style="cursor:pointer" data-node="'+k2+'"></circle>';}
+    svg+='</svg>';
+    return '<div class="map">'+svg+
+      '<div class="maplabel">Touche un point de la carte pour le choisir comme <b>arrivée</b></div>'+
+      '<div class="legend"><span><i style="background:var(--vert)"></i>V</span><span><i style="background:var(--bleu)"></i>B</span><span><i style="background:var(--rouge)"></i>R</span><span><i style="background:var(--noir)"></i>N</span></div>'+
+      '</div>';
+  }
+
+  function trackPoly(ids,color,dash,w){
+    var pts=ids.map(function(k){return N[k].x+","+N[k].y;}).join(" ");
+    return '<polyline points="'+pts+'" fill="none" stroke="'+color+'" stroke-width="'+(w||7)+'" '+(dash?'stroke-dasharray="11 9" ':'')+'opacity="'+(dash?.85:.95)+'" stroke-linecap="round" stroke-linejoin="round"/>';
+  }
+  function parcoursMap(day){
+    var svg='<svg viewBox="0 0 1000 780" role="img" aria-label="Parcours de la journée sur le domaine">';
+    svg+='<defs><linearGradient id="skyb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--sky1)"/><stop offset="1" stop-color="var(--sky2)"/></linearGradient></defs>';
+    svg+='<rect width="1000" height="780" fill="url(#skyb)"/>';
+    svg+='<path d="M0 300 L250 120 L430 260 L620 90 L1000 330 L1000 780 L0 780 Z" fill="var(--snow)" opacity=".55"/>';
+    E.forEach(function(e){svg+='<path d="'+edgePath(e)+'" fill="none" stroke="var(--line)" stroke-width="'+(e.k==="lift"?2:4)+'" opacity=".55"/>';});
+    if(state.ft)FRIENDS.forEach(function(f){if(f.shareTracks&&f.track)svg+=trackPoly(f.track,f.c,true,5);});
+    svg+=trackPoly(day.track,"var(--accent)",false,8);
+    for(var k in N){var nd=N[k];svg+='<circle cx="'+nd.x+'" cy="'+nd.y+'" r="5" fill="var(--surface)" stroke="var(--muted)" stroke-width="2"/>';}
+    var s=N[day.track[0]],en=N[day.track[day.track.length-1]];
+    svg+='<circle cx="'+s.x+'" cy="'+s.y+'" r="9" fill="var(--accent)" stroke="var(--surface)" stroke-width="3"/>';
+    svg+='<circle cx="'+en.x+'" cy="'+en.y+'" r="9" fill="var(--rouge)" stroke="var(--surface)" stroke-width="3"/>';
+    svg+='</svg>';
+    return '<div class="map">'+svg+'<div class="maplabel">Départ <b>•</b> → arrivée <b>•</b> · '+day.track.length+' points</div></div>';
+  }
+
+  /* ---- views ---- */
+  function optionList(sel){return Object.keys(N).map(function(k){return '<option value="'+k+'"'+(k===sel?" selected":"")+'>'+esc(N[k].name)+'</option>';}).join("");}
+
+  function liftIcon(){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4 20 9"/><circle cx="6" cy="5" r="1.4"/><path d="M15 7.5v3a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-1"/><path d="M15.5 12.5 15 20m4-7-.5 7"/></svg>';}
+  function flagIcon(){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4m0 0 9 3-9 3"/><path d="M5 7l12-3v8l-12 3"/></svg>';}
+  function busIcon(){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="13" rx="2"/><path d="M4 11h16M8 17v2M16 17v2"/><circle cx="8.5" cy="14" r=".6"/><circle cx="15.5" cy="14" r=".6"/></svg>';}
+  function homeIcon(){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 12 4l8 7"/><path d="M6 10v9h12v-9"/></svg>';}
+  function homeBar(){
+    if(state.homeEdit){
+      return '<div class="field" style="flex:1"><span class="dot" style="background:var(--accent)"></span><div style="flex:1;min-width:0"><label>Ma maison (hébergement)</label><select id="homesel">'+optionList(state.home||state.to)+'</select></div></div>';
+    }
+    if(state.home){
+      return '<button class="homego" data-home-go>'+homeIcon()+'Retour maison · '+esc(N[state.home].name)+'</button><button class="linklike" data-home-edit>Changer</button>';
+    }
+    return '<button class="linklike" data-home-edit>'+homeIcon()+'Définir ma maison</button>';
+  }
+
+  function carte(){
+    var rt=route(state.from,state.to),h=renderMap();
+    h+='<div class="card">';
+    h+='<div class="od"><div class="fields">'+
+       '<div class="field"><span class="dot a"></span><div style="flex:1;min-width:0"><label>Départ</label><select id="from">'+optionList(state.from)+'</select></div></div>'+
+       '<div class="field"><span class="dot b"></span><div style="flex:1;min-width:0"><label>Arrivée</label><select id="to">'+optionList(state.to)+'</select></div></div>'+
+       '</div><button class="swap" id="swap" aria-label="Inverser départ et arrivée"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16M7 4 3 8m4-4 4 4M17 20V4m0 16 4-4m-4 4-4-4"/></svg></button></div>';
+    h+='<div class="lbl">Optimiser</div><div class="seg" data-seg="crit">'+Object.keys(CRITS).map(function(c){return '<button class="chip" aria-pressed="'+(state.crit===c)+'" data-crit="'+c+'">'+CRITS[c]+'</button>';}).join("")+'</div>';
+    h+='<div class="lbl">Mon niveau</div><div class="seg" data-seg="level">'+Object.keys(LEVELS).map(function(l){return '<button class="chip" aria-pressed="'+(state.level===l)+'" data-level="'+l+'">'+LEVELS[l].lbl+'</button>';}).join("")+'</div>';
+    h+='<div class="lbl">Déplacement</div><div class="seg" data-seg="nav"><button class="chip" aria-pressed="'+(!state.navette)+'" data-nav="0">Ski uniquement</button><button class="chip" aria-pressed="'+state.navette+'" data-nav="1">Avec navette</button></div>';
+    h+='<div class="homebar">'+homeBar()+'</div>';
+    h+='</div>';
+    // result
+    h+='<div class="card">';
+    if(!rt){
+      h+='<div class="empty"><b>Aucun itinéraire trouvé</b>Les seules pistes depuis ce point dépassent ton niveau, ou une liaison est fermée. Essaie un niveau au-dessus'+(!state.navette?', ou active « Avec navette » si ton arrivée n\'est reliée que par bus':'')+'.</div>';
+    }else if(!rt.length){
+      h+='<div class="empty"><b>Tu y es déjà</b>Choisis une arrivée différente du départ.</div>';
+    }else{
+      var tot=0,lifts=0,pistes=0,buses=0;rt.forEach(function(e){tot+=e.t;if(e.k==="lift")lifts++;else if(e.k==="bus")buses++;else pistes++;});
+      h+='<div class="summary"><div class="big">'+tot+'<span style="font-size:.9rem"> min</span></div>'+
+         '<div class="meta"><b>'+lifts+'</b> remontée'+(lifts>1?"s":"")+'<br><b>'+pistes+'</b> piste'+(pistes>1?"s":"")+(buses?'<br><b>'+buses+'</b> navette'+(buses>1?"s":""):"")+'</div>'+
+         '<div class="alt"><b>'+N[state.from].alt+' m</b><br>→ '+N[state.to].alt+' m</div></div>';
+      var al=routeAlerts(rt);
+      h+='<div class="nowline">Simulation · il est '+fmt(NOW)+'</div>';
+      if(al.worst)h+='<div class="alert banner '+al.worst.lvl+'">'+warnIcon()+'<span><b>'+esc(al.worst.name)+'</b> '+al.worst.txt+'</span></div>';
+      h+='<ol class="steps">';
+      h+='<li class="step"><span class="mk"><span class="disc" style="background:var(--accent)"></span></span><div class="bd"><div class="act">Départ · <span class="nm">'+esc(N[state.from].name)+'</span></div><div class="ln"><span class="time">'+N[state.from].alt+' m</span></div></div></li>';
+      rt.forEach(function(e){
+        if(e.k==="piste"){
+          h+='<li class="step"><span class="mk"><span class="disc d-'+e.d+'"></span></span><div class="bd"><div class="act">Descends la <span class="nm">'+esc(e.n)+'</span></div><div class="ln"><span class="tag"><span class="disc d-'+e.d+'"></span>'+DIFFLBL[e.d]+'</span><span class="time">'+e.t+' min</span></div></div></li>';
+        }else if(e.k==="bus"){
+          h+='<li class="step"><span class="mk" style="border-color:var(--bus)">'+busIcon()+'</span><div class="bd"><div class="act">Prends la <span class="nm">'+esc(e.n)+'</span></div><div class="ln"><span class="tag">'+e.sub+' · '+e.h+'</span><span class="time">'+e.t+' min</span></div></div></li>';
+        }else{
+          var la=al.per[e.id],mk=la?(la.lvl==="crit"?" critmk":" warnmk"):"";
+          h+='<li class="step"><span class="mk'+mk+'">'+liftIcon()+'</span><div class="bd"><div class="act">Prends <span class="nm">'+esc(e.n)+'</span></div><div class="ln"><span class="tag">'+e.sub+'</span><span class="time">'+e.t+' min</span>'+(la?'<span class="alert '+la.lvl+'">'+warnIcon()+'Ferme à '+fmt(closeMin(e.h))+'</span>':'')+'</div></div></li>';
+        }
+      });
+      h+='<li class="step"><span class="mk fin">'+flagIcon()+'</span><div class="bd"><div class="act">Arrivée · <span class="nm">'+esc(N[state.to].name)+'</span></div><div class="ln"><span class="time">'+N[state.to].alt+' m</span></div></div></li>';
+      h+='</ol>';
+    }
+    h+='</div>';
+    return h;
+  }
+
+  function amis(){
+    var h='<div class="card"><div class="toggle"><div><div style="font-weight:600">Partager ma position</div><div class="mt" style="font-size:.78rem;color:var(--muted)">Visible par tes amis du domaine</div></div><button class="sw" id="share" aria-pressed="'+state.share+'" aria-label="Partager ma position"></button></div>';
+    if(state.share){
+      h+='<h2 class="row">Sur le domaine<span class="state on"><i></i>'+FRIENDS.length+' en ligne</span></h2>';
+      FRIENDS.forEach(function(f){
+        h+='<div class="rowitem"><span class="av" style="background:'+f.c+'">'+esc(f.init)+'</span>'+
+           '<div class="info"><div class="nm">'+esc(f.name)+'</div><div class="mt">'+esc(f.zone)+' · '+f.seen+'</div></div>'+
+           '<button class="join" data-join="'+f.at+'">Rejoindre</button></div>';
+      });
+      h+='</div><div class="note">« Rejoindre » calcule l\'itinéraire jusqu\'à l\'ami choisi depuis ta position.</div>';
+    }else{
+      h+='<div class="empty"><b>Partage désactivé</b>Active le partage pour voir tes amis sur la carte et les rejoindre.</div></div>';
+    }
+    return h;
+  }
+
+  var HCATS=[["remontees","Remontées"],["pistes","Pistes"],["navettes","Navettes"],["restos","Restaurants"],["activites","Activités"]];
+  function horaires(){
+    var lifts=E.filter(function(e){return e.k==="lift";}),pistes=E.filter(function(e){return e.k==="piste";});
+    var lo=lifts.filter(function(e){return !e.closed;}).length,po=pistes.filter(function(e){return !e.closed;}).length;
+    var h='<div class="card"><h2>Val Frisson · horaires</h2>'+
+      '<div class="statline"><div class="stat"><div class="n">'+lo+'/'+lifts.length+'</div><div class="k">Remontées ouvertes</div></div>'+
+      '<div class="stat"><div class="n">'+po+'/'+pistes.length+'</div><div class="k">Pistes ouvertes</div></div></div>'+
+      '<div class="statline"><div class="stat"><div class="n">120 cm</div><div class="k">Neige au sommet</div></div>'+
+      '<div class="stat"><div class="n">−6°</div><div class="k">Sommet · ciel clair</div></div></div>'+
+      '<div class="seg" data-seg="hcat" style="margin-top:4px;row-gap:7px">'+HCATS.map(function(c){return '<button class="chip" aria-pressed="'+(state.hcat===c[0])+'" data-hcat="'+c[0]+'">'+c[1]+'</button>';}).join("")+'</div></div>';
+    var openb=function(lbl){return '<span class="state on"><i></i>'+lbl+'</span>';},closeb=function(lbl){return '<span class="state off"><i></i>'+lbl+'</span>';};
+    var go=function(node){return '<button class="ygo" data-go="'+node+'">Y aller</button>';};
+    var row=function(ds,inner,status,node){return '<div class="rowitem" data-hsearch="'+esc(ds.toLowerCase())+'"><div class="info">'+inner+'</div><div class="rside">'+status+go(node)+'</div></div>';};
+    h+='<div class="card"><div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input id="hq" type="search" placeholder="Rechercher dans les horaires…" value="'+esc(state.hq||"")+'" autocomplete="off"></div>';
+    if(state.hcat==="pistes"){h+='<div class="note" style="margin:0 0 9px"><b>Dernière descente</b> conseillée à 16h45 · damage du domaine dès 17h30.</div>';}
+    h+='<div id="hlist">';
+    if(state.hcat==="remontees"){
+      lifts.forEach(function(e){h+=row(e.n+" "+e.sub,'<div class="nm">'+esc(e.n)+'</div><div class="mt">'+esc(e.sub)+' · '+e.h+'</div>',e.closed?closeb("Fermée"):openb("Ouverte"),e.a);});
+    }else if(state.hcat==="pistes"){
+      pistes.forEach(function(e){h+=row(e.n+" "+DIFFLBL[e.d],'<div class="nm">'+esc(e.n)+'</div><div class="mt" style="margin-top:3px"><span class="tag"><span class="disc d-'+e.d+'"></span>'+DIFFLBL[e.d]+'</span></div>',e.closed?closeb("Fermée"):openb("Ouverte"),e.a);});
+    }else if(state.hcat==="navettes"){
+      NAVETTES.forEach(function(v){h+=row(v.n+" "+v.route,'<div class="nm">'+esc(v.n)+'</div><div class="mt">'+esc(v.route)+' · '+esc(v.freq)+'</div><div class="mt" style="margin-top:2px">'+v.h+'</div>',openb("En service"),v.node);});
+    }else if(state.hcat==="restos"){
+      RESTOS.forEach(function(r){h+=row(r.name+" "+r.kind+" "+N[r.at].name,'<div class="nm">'+esc(r.name)+'</div><div class="mt">'+esc(r.kind)+' · '+esc(N[r.at].name)+'</div><div class="mt" style="margin-top:2px">'+r.h+'</div>',r.open?openb("Ouvert"):closeb("Fermé"),r.at);});
+    }else{
+      ACTIVITES.forEach(function(a){h+=row(a.n+" "+a.loc,'<div class="nm">'+esc(a.n)+'</div><div class="mt">'+esc(a.loc)+'</div><div class="mt" style="margin-top:2px">'+esc(a.h)+'</div>',a.resa?closeb("Sur résa"):openb("Ouvert"),a.node);});
+    }
+    h+='<div id="hnoresult" class="empty" hidden><b>Aucun résultat</b>Essaie un autre mot ou une autre catégorie.</div>';
+    h+='</div>';
+    h+='<div class="note"><b>Collecteur Skifaut.</b> Chaque station publie son info à sa façon (page web, open-data, flux du domaine). Un collecteur type ETL récupère chaque source — pistes, remontées, navettes, restos, activités — et la ramène à un format commun. Mis à jour il y a 4 min.</div></div>';
+    return h;
+  }
+  function filterHoraires(){
+    var q=(state.hq||"").trim().toLowerCase(),vis=0;
+    document.querySelectorAll("#hlist [data-hsearch]").forEach(function(el){
+      var m=!q||el.getAttribute("data-hsearch").indexOf(q)>=0;el.hidden=!m;if(m)vis++;
+    });
+    var nr=document.getElementById("hnoresult");if(nr)nr.hidden=vis>0;
+  }
+
+  function parcours(){
+    var day=DAYS.filter(function(d){return d.id===state.day;})[0];
+    var h='<div class="card" style="padding-bottom:9px"><div class="seg" data-seg="day" style="margin-bottom:12px">'+DAYS.map(function(d){return '<button class="chip" aria-pressed="'+(state.day===d.id)+'" data-day="'+d.id+'">'+d.lbl+'</button>';}).join("")+'</div>';
+    h+='<div style="font-family:var(--disp);font-weight:700;font-size:1.15rem;margin-bottom:11px">'+day.date+'</div>';
+    h+=parcoursMap(day);
+    if(state.ft){
+      var sh=FRIENDS.filter(function(f){return f.shareTracks;});
+      h+='<div class="seg" style="margin-top:4px;row-gap:6px"><span class="tag"><span class="disc" style="background:var(--accent)"></span>Moi</span>'+sh.map(function(f){return '<span class="tag"><span class="disc" style="background:'+f.c+'"></span>'+esc(f.name)+'</span>';}).join("")+'</div>';
+    }
+    h+='</div>';
+    h+='<div class="card"><div class="toggle"><div><div style="font-weight:600">Voir les parcours des amis</div><div class="mt" style="font-size:.78rem;color:var(--muted)">En surimpression, s\'ils les partagent</div></div><button class="sw" id="ft" aria-pressed="'+state.ft+'" aria-label="Voir les parcours des amis"></button></div>';
+    h+='<div class="statline"><div class="stat"><div class="n">'+day.km+'</div><div class="k">Distance</div></div><div class="stat"><div class="n">'+day.deniv+'</div><div class="k">Dénivelé négatif</div></div></div>';
+    h+='<div class="statline"><div class="stat"><div class="n">'+day.pistes+'</div><div class="k">Pistes</div></div><div class="stat"><div class="n">'+day.lifts+'</div><div class="k">Remontées</div></div><div class="stat"><div class="n">'+day.temps+'</div><div class="k">Sur les skis</div></div></div>';
+    h+='<div class="note">Tes journées sont enregistrées sur l\'appareil. Un ami n\'apparaît que s\'il accepte de partager son parcours — sinon il reste masqué.</div></div>';
+    return h;
+  }
+
+  function domaines(){
+    var h='<div class="gps"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.3-7-11a7 7 0 0 1 14 0c0 4.7-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>'+
+      '<div style="flex:1;min-width:0"><div class="nm">Val Frisson</div><div class="mt">Position GPS · Savoie · à 1,2 km</div></div><span class="state on"><i></i>Détecté</span></div>';
+    h+='<div class="card"><button class="linkbtn done" disabled>Carte téléchargée · prête hors-ligne (14 Mo)</button>'+
+      '<div class="note">Skifaut couvre tous les domaines français, mais ne télécharge que celui où tu te trouves, repéré par le GPS. Tu peux aussi en ajouter un à la main avant de partir.</div></div>';
+    h+='<div class="card"><h2>Autres domaines</h2>';
+    DOMAINS.forEach(function(dm,i){
+      var done=state.dl["d"+i];
+      h+='<div class="rowitem"><div class="info"><div class="nm">'+esc(dm.n)+'</div><div class="mt">'+esc(dm.d)+' · '+dm.s+'</div></div>'+
+         '<button class="dl'+(done?" done":"")+'" data-dl="'+i+'">'+(done?"Téléchargé":"Télécharger")+'</button></div>';
+    });
+    h+='</div>';
+    return h;
+  }
+
+  function starSvg(f){return '<svg viewBox="0 0 24 24" fill="'+(f?"currentColor":"none")+'" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.1.8-4.4 4.2 1.1 6-5.5-2.9L6.6 19.6l1.1-6L3.2 9.4l6.1-.8Z"/></svg>';}
+  function manger(){
+    var favs=RESTOS.filter(function(r){return state.fav[r.id];}),rest=RESTOS.filter(function(r){return !state.fav[r.id];});
+    var list=favs.concat(rest);
+    var h='<div class="card"><div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input id="q" type="search" placeholder="Rechercher un lieu, un type…" value="'+esc(state.q||"")+'" autocomplete="off"></div>';
+    h+='<div id="restos">';
+    list.forEach(function(r){
+      var isf=!!state.fav[r.id],ds=(r.name+" "+r.kind+" "+r.tag+" "+N[r.at].name+" "+r.price).toLowerCase();
+      h+='<div class="rowitem" data-search="'+esc(ds)+'">'+
+         '<button class="star" aria-pressed="'+isf+'" data-fav="'+r.id+'" aria-label="Mettre en favori">'+starSvg(isf)+'</button>'+
+         '<div class="info"><div class="nm">'+esc(r.name)+'</div><div class="mt">'+esc(r.kind)+' · '+esc(N[r.at].name)+' · <span class="price">'+r.price+'</span></div>'+
+         '<div class="mt" style="margin-top:2px">'+(r.open?'':'<span class="state off"><i></i>Fermé · </span>')+esc(r.tag)+'</div></div>'+
+         '<button class="ygo" data-go="'+r.at+'">Y aller</button></div>';
+    });
+    h+='<div id="noresto" class="empty" hidden><b>Aucun résultat</b>Essaie un autre mot.</div>';
+    h+='</div></div>';
+    return h;
+  }
+  function filterRestos(){
+    var q=(state.q||"").trim().toLowerCase(),vis=0;
+    var rows=document.querySelectorAll("#restos [data-search]");
+    rows.forEach(function(el){var m=!q||el.getAttribute("data-search").indexOf(q)>=0;el.hidden=!m;if(m)vis++;});
+    var nr=document.getElementById("noresto");if(nr)nr.hidden=vis>0;
+  }
+
+  var VIEWS={carte:carte,parcours:parcours,amis:amis,horaires:horaires,domaines:domaines,manger:manger};
+  var NAVITEMS=[
+    {k:"carte",l:"Carte",i:'<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z"/><path d="M9 4v14M15 6v14"/>'},
+    {k:"parcours",l:"Parcours",i:'<circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M8 16.5 16 7.5" stroke-dasharray="2.5 3"/>'},
+    {k:"amis",l:"Amis",i:'<circle cx="9" cy="8" r="3.2"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><circle cx="17" cy="9" r="2.6"/><path d="M15 15.6A4.6 4.6 0 0 1 21 20"/>'},
+    {k:"horaires",l:"Horaires",i:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'},
+    {k:"domaines",l:"Domaines",i:'<path d="M12 21s-7-6.3-7-11a7 7 0 0 1 14 0c0 4.7-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/>'},
+    {k:"manger",l:"Manger",i:'<path d="M4 3v6a2 2 0 0 0 2 2 2 2 0 0 0 2-2V3M6 11v10"/><path d="M19 3a4 4 0 0 0-3 4v5h3Zm0 0v18"/>'}
+  ];
+  function renderNav(){
+    document.getElementById("nav").innerHTML=NAVITEMS.map(function(it){
+      return '<button class="navbtn" aria-current="'+(state.tab===it.k)+'" data-tab="'+it.k+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+it.i+'</svg>'+it.l+'</button>';
+    }).join("");
+  }
+  function render(){
+    document.getElementById("view").innerHTML=VIEWS[state.tab]();
+    renderNav();if(state.tab==="manger")filterRestos();if(state.tab==="horaires")filterHoraires();persist();
+  }
+
+  document.addEventListener("click",function(ev){
+    var t=ev.target.closest("[data-tab],[data-crit],[data-level],[data-node],[data-join],[data-dl],[data-day],[data-hcat],[data-fav],[data-go],[data-nav],[data-home-go],[data-home-edit],#swap,#share,#ft");
+    if(!t)return;var d=t.dataset;
+    if(d.tab){state.tab=d.tab;render();window.scrollTo(0,0);return;}
+    if(d.hcat){state.hcat=d.hcat;render();return;}
+    if(d.crit){state.crit=d.crit;render();return;}
+    if(d.level){state.level=d.level;render();return;}
+    if(d.day){state.day=d.day;render();return;}
+    if(t.id==="ft"){state.ft=!state.ft;render();return;}
+    if(d.fav){state.fav[d.fav]=!state.fav[d.fav];render();return;}
+    if(d.go){state.to=d.go;state.tab="carte";render();window.scrollTo(0,0);return;}
+    if(d.nav!=null){state.navette=d.nav==="1";render();return;}
+    if(t.hasAttribute("data-home-go")){if(state.home)state.to=state.home;state.homeEdit=false;render();return;}
+    if(t.hasAttribute("data-home-edit")){state.homeEdit=!state.homeEdit;render();return;}
+    if(d.node){if(d.node!==state.from){state.to=d.node;}render();return;}
+    if(d.join){state.to=d.join;state.tab="carte";render();window.scrollTo(0,0);return;}
+    if(d.dl!=null){state.dl["d"+d.dl]=!state.dl["d"+d.dl];render();return;}
+    if(t.id==="swap"){var f=state.from;state.from=state.to;state.to=f;render();return;}
+    if(t.id==="share"){state.share=!state.share;render();return;}
+  });
+  document.addEventListener("change",function(ev){
+    if(ev.target.id==="from"){state.from=ev.target.value;render();}
+    if(ev.target.id==="to"){state.to=ev.target.value;render();}
+    if(ev.target.id==="homesel"){state.home=ev.target.value;state.homeEdit=false;render();}
+  });
+  document.addEventListener("input",function(ev){
+    if(ev.target.id==="q"){state.q=ev.target.value;filterRestos();persist();return;}
+    if(ev.target.id==="hq"){state.hq=ev.target.value;filterHoraires();persist();return;}
+  });
+
+  render();
+})();
+</script>

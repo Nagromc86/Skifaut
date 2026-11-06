@@ -1,0 +1,11 @@
+{
+  "appId": "fr.nagromc86.skifaut",
+  "appName": "Skifaut",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "backgroundColor": "#eaf2f8"
+  }
+}
