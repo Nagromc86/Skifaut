@@ -1,0 +1,450 @@
+{
+  "generatedAt": "2026-11-06T14:58:32.552Z",
+  "version": 1,
+  "attribution": [
+    "OpenStreetMap (ODbL)",
+    "Wikidata (CC0)",
+    "Météo-France",
+    "SkiRadar.fr",
+    "DATAtourisme"
+  ],
+  "domains": [
+    {
+      "id": "avoriaz",
+      "name": "Avoriaz",
+      "massif": "Alpes du Nord",
+      "area": "Portes du Soleil",
+      "commune": "Morzine",
+      "lat": 46.1922,
+      "lon": 6.7736,
+      "altMin": 1800,
+      "altMax": 2466,
+      "sources": [
+        "Skifaut (curé)"
+      ],
+      "status": null,
+      "snow": null,
+      "website": null,
+      "pistemap": null,
+      "graph": null
+    },
+    {
+      "id": "chamonix-mont-blanc",
+      "name": "Chamonix-Mont-Blanc",
+      "massif": "Alpes du Nord",
+      "area": "Vallée de Chamonix",
+      "commune": "Chamonix-Mont-Blanc",
+      "lat": 45.9237,
+      "lon": 6.8694,
+      "altMin": 1035,
+      "altMax": 3842,
+      "sources": [
+        "Skifaut (curé)"
+      ],
+      "status": null,
+      "snow": null,
+      "website": null,
+      "pistemap": null,
+      "graph": null
+    },
+    {
+      "id": "courchevel",
+      "name": "Courchevel",
+      "massif": "Alpes du Nord",
+      "area": "Les 3 Vallées",
+      "commune": "Courchevel",
+      "lat": 45.4154,
+      "lon": 6.6342,
+      "altMin": 1260,
+      "altMax": 2738,
+      "sources": [
+        "Skifaut (curé)"
+      ],
+      "status": null,
+      "snow": null,
+      "website": null,
+      "pistemap": null,
+      "graph": null
+    },
+    {
+      "id": "font-romeu",
+      "name": "Font-Romeu",
+      "massif": "Pyrénées",
+      "area": "Pyrénées 2000",
+      "commune": "Font-Romeu-Odeillo-Via",
+      "lat": 42.502,
+      "lon": 2.04,
+      "altMin": 1600,
+      "altMax": 2213,
+      "sources": [
+        "Skifaut (curé)"
+      ],
+      "status": null,
+      "snow": null,
+      "website": null,
+      "pistemap": null,
+      "graph": null
+    },
+    {
+      "id": "grand-tourmalet",
+      "name": "Grand Tourmalet",
+      "massif": "Pyrénées",
+      "area": "La Mongie · Barèges",
+      "commune": "Bagnères-de-Bigorre",
+      "lat": 42.909,
+      "lon": 0.177,
+      "altMin": 1400,
+      "altMax": 2500,
+      "sources": [
+        "Skifaut (curé)"
+      ],
+      "status": null,
+      "snow": null,
+      "website": null,
+      "pistemap": null,
+      "graph": null
+    },
+    {
+      "id": "l-alpe-d-huez",
+      "name": "L'Alpe d'Huez",
+      "massif": "Alpes du Nord",
+      "area": "Grand Domaine de Ski",
+      "commune": "Huez",
+      "lat": 45.0905,
+      "lon": 6.0695,
+      "altMin": 1250,
+      "altMax": 3330,
+      "sources": [
+        "Skifaut (curé)"
+      ],
+      "status": null,
+      "snow": null,
+      "website": null,
+      "pistemap": null,
+      "graph": null
+    },
+    {
+      "id": "la-bresse-hohneck",
+      "name": "La Bresse-Hohneck",
+      "massif": "Vosges",
+      "area": "La Bresse",
+      "commune": "La Bresse",
+      "lat": 48.003,
+      "lon": 6.9,
+      "altMin": 900,
+      "altMax": 1350,
+      "sources": [
+        "Skifaut (curé)"
+      ],
+      "status": null,
+      "snow": null,
+      "website": null,
+      "pistemap": null,
+      "graph": null
+    },
+    {
+      "id": "la-clusaz",
+      "name": "La Clusaz",
+      "massif": "Alpes du Nord",
+      "area": "Aravis",
+      "commune": "La Clusaz",
+      "lat": 45.9047,
+      "lon": 6.4236,
+      "altMin": 1100,
+      "altMax": 2600,
+      "sources": [
+        "Skifaut (curé)"
+      ],
+      "status": null,
+      "snow": null,
+      "website": null,
+      "pistemap": null,
+      "graph": null
+    },
+    {
+      "id": "la-plagne",
+      "name": "La Plagne",
+      "massif": "Alpes du Nord",
+      "area": "Paradiski",
+      "commune": "La Plagne-Tarentaise",
+      "lat": 45.5069,
+      "lon": 6.6775,
+      "altMin": 1250,
+      "altMax": 3250,
+      "sources": [
+        "Skifaut (curé)"
+      ],
+      "status": null,
+      "snow": null,
+      "website": null,
+      "pistemap": null,
+      "graph": null
+    },
+    {
+      "id": "le-grand-bornand",
+      "name": "Le Grand-Bornand",
+      "massif": "Alpes du Nord",
+      "area": "Aravis",
+      "commune": "Le Grand-Bornand",
+      "lat": 45.942,
+      "lon": 6.428,
+      "altMin": 1000,
+      "altMax": 2100,
+      "sources": [
+        "Skifaut (curé)"
+      ],
+      "status": null,
+      "snow": null,
+      "website": null,
+      "pistemap": null,
+      "graph": null
+    },
+    {
+      "id": "les-arcs",
+      "name": "Les Arcs",
+      "massif": "Alpes du Nord",
+      "area": "Paradiski",
+      "commune": "Bourg-Saint-Maurice",
+      "lat": 45.572,
+      "lon": 6.828,
+      "altMin": 1200,
+      "altMax": 3226,
+      "sources": [
+        "Skifaut (curé)"
+      ],
+      "status": null,
+      "snow": null,
+      "website": null,
+      "pistemap": null,
+      "graph": null
+    },
+    {
+      "id": "les-deux-alpes",
+      "name": "Les Deux Alpes",
+      "massif": "Alpes du Nord",
+      "area": "Les 2 Alpes",
+      "commune": "Les Deux Alpes",
+      "lat": 45.0109,
+      "lon": 6.1247,
+      "altMin": 1300,
+      "altMax": 3600,
+      "sources": [
+        "Skifaut (curé)"
+      ],
+      "status": null,
+      "snow": null,
+      "website": null,
+      "pistemap": null,
+      "graph": null
+    },
+    {
+      "id": "les-gets",
+      "name": "Les Gets",
+      "massif": "Alpes du Nord",
+      "area": "Portes du Soleil",
+      "commune": "Les Gets",
+      "lat": 46.1583,
+      "lon": 6.6697,
+      "altMin": 1172,
+      "altMax": 2002,
+      "sources": [
+        "Skifaut (curé)"
+      ],
+      "status": null,
+      "snow": null,
+      "website": null,
+      "pistemap": null,
+      "graph": null
+    },
+    {
+      "id": "les-menuires",
+      "name": "Les Menuires",
+      "massif": "Alpes du Nord",
+      "area": "Les 3 Vallées",
+      "commune": "Les Belleville",
+      "lat": 45.323,
+      "lon": 6.534,
+      "altMin": 1450,
+      "altMax": 2850,
+      "sources": [
+        "Skifaut (curé)"
+      ],
+      "status": null,
+      "snow": null,
+      "website": null,
+      "pistemap": null,
+      "graph": null
+    },
+    {
+      "id": "megeve",
+      "name": "Megève",
+      "massif": "Alpes du Nord",
+      "area": "Évasion Mont-Blanc",
+      "commune": "Megève",
+      "lat": 45.8566,
+      "lon": 6.6176,
+      "altMin": 1113,
+      "altMax": 2353,
+      "sources": [
+        "Skifaut (curé)"
+      ],
+      "status": null,
+      "snow": null,
+      "website": null,
+      "pistemap": null,
+      "graph": null
+    },
+    {
+      "id": "meribel",
+      "name": "Méribel",
+      "massif": "Alpes du Nord",
+      "area": "Les 3 Vallées",
+      "commune": "Les Allues",
+      "lat": 45.396,
+      "lon": 6.5658,
+      "altMin": 1100,
+      "altMax": 2952,
+      "sources": [
+        "Skifaut (curé)"
+      ],
+      "status": null,
+      "snow": null,
+      "website": null,
+      "pistemap": null,
+      "graph": null
+    },
+    {
+      "id": "metabief",
+      "name": "Métabief",
+      "massif": "Jura",
+      "area": "Mont d'Or",
+      "commune": "Métabief",
+      "lat": 46.77,
+      "lon": 6.355,
+      "altMin": 1000,
+      "altMax": 1430,
+      "sources": [
+        "Skifaut (curé)"
+      ],
+      "status": null,
+      "snow": null,
+      "website": null,
+      "pistemap": null,
+      "graph": null
+    },
+    {
+      "id": "serre-chevalier",
+      "name": "Serre Chevalier",
+      "massif": "Alpes du Sud",
+      "area": "Serre Chevalier Vallée",
+      "commune": "La Salle-les-Alpes",
+      "lat": 44.93,
+      "lon": 6.55,
+      "altMin": 1200,
+      "altMax": 2800,
+      "sources": [
+        "Skifaut (curé)"
+      ],
+      "status": null,
+      "snow": null,
+      "website": null,
+      "pistemap": null,
+      "graph": null
+    },
+    {
+      "id": "super-besse",
+      "name": "Super-Besse",
+      "massif": "Massif central",
+      "area": "Sancy",
+      "commune": "Besse-et-Saint-Anastaise",
+      "lat": 45.51,
+      "lon": 2.853,
+      "altMin": 1300,
+      "altMax": 1850,
+      "sources": [
+        "Skifaut (curé)"
+      ],
+      "status": null,
+      "snow": null,
+      "website": null,
+      "pistemap": null,
+      "graph": null
+    },
+    {
+      "id": "tignes",
+      "name": "Tignes",
+      "massif": "Alpes du Nord",
+      "area": "Tignes · Val d'Isère",
+      "commune": "Tignes",
+      "lat": 45.4686,
+      "lon": 6.906,
+      "altMin": 1550,
+      "altMax": 3456,
+      "sources": [
+        "Skifaut (curé)"
+      ],
+      "status": null,
+      "snow": null,
+      "website": null,
+      "pistemap": null,
+      "graph": null
+    },
+    {
+      "id": "val-cenis",
+      "name": "Val Cenis",
+      "massif": "Alpes du Nord",
+      "area": "Haute-Maurienne",
+      "commune": "Val-Cenis",
+      "lat": 45.229,
+      "lon": 6.907,
+      "altMin": 1300,
+      "altMax": 2800,
+      "sources": [
+        "Skifaut (curé)"
+      ],
+      "status": null,
+      "snow": null,
+      "website": null,
+      "pistemap": null,
+      "graph": null
+    },
+    {
+      "id": "val-d-isere",
+      "name": "Val d'Isère",
+      "massif": "Alpes du Nord",
+      "area": "Tignes · Val d'Isère",
+      "commune": "Val-d'Isère",
+      "lat": 45.4486,
+      "lon": 6.98,
+      "altMin": 1785,
+      "altMax": 3456,
+      "sources": [
+        "Skifaut (curé)"
+      ],
+      "status": null,
+      "snow": null,
+      "website": null,
+      "pistemap": null,
+      "graph": null
+    },
+    {
+      "id": "val-thorens",
+      "name": "Val Thorens",
+      "massif": "Alpes du Nord",
+      "area": "Les 3 Vallées",
+      "commune": "Les Belleville",
+      "lat": 45.2976,
+      "lon": 6.5806,
+      "altMin": 2300,
+      "altMax": 3230,
+      "sources": [
+        "Skifaut (curé)"
+      ],
+      "status": null,
+      "snow": null,
+      "website": null,
+      "pistemap": null,
+      "graph": null
+    }
+  ]
+}

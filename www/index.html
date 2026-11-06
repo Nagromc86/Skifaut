@@ -167,6 +167,21 @@ button{font-family:inherit;cursor:pointer}
 .price{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:600}
 .ygo{border:1px solid var(--line);background:var(--surface);color:var(--accent);border-radius:999px;padding:6px 12px;font-size:.8rem;font-weight:600;flex:none}
 .rside{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none}
+.navactions{display:flex;gap:9px;margin:2px 0 12px}
+.startbtn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--accent);color:#fff;border:0;border-radius:13px;padding:13px;font-family:var(--disp);font-weight:700;font-size:1rem;cursor:pointer}
+.startbtn svg{width:18px;height:18px}
+.simbtn{background:var(--surface2);color:var(--fg);border:1px solid var(--line);border-radius:13px;padding:13px 16px;font-weight:600;font-size:.92rem;cursor:pointer}
+.navstop{background:var(--surface2);color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-weight:600;font-size:.85rem;cursor:pointer}
+.navstop.wide{width:100%;padding:13px;border-radius:13px}
+.navcard{background:linear-gradient(135deg,#1f6feb,#3b82f6);color:#fff;border-radius:18px;padding:15px 16px;margin-bottom:12px;box-shadow:0 10px 24px rgba(31,111,235,.35)}
+.navtop{display:flex;justify-content:space-between;align-items:center;font-size:.76rem;font-weight:600;opacity:.92;margin-bottom:9px}
+.navbadge{background:rgba(255,255,255,.22);padding:3px 9px;border-radius:999px}
+.navinstr{font-family:var(--disp);font-weight:800;font-size:1.3rem;line-height:1.2}
+.navsub{font-size:.82rem;opacity:.92;margin-top:4px}
+.navnext{font-size:.82rem;opacity:.85;margin-top:10px;padding-top:9px;border-top:1px solid rgba(255,255,255,.25)}
+.navfoot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px}
+.navdist{font-size:.85rem}.navdist b{font-family:var(--disp);font-size:1.02rem}
+.navfoot .navstop{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.45);color:#fff}
 .navbtn[aria-current="true"]{color:var(--accent)}
 .hidden{display:none}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -371,6 +386,10 @@ button{font-family:inherit;cursor:pointer}
     var u=N[state.from];
     svg+='<circle cx="'+u.x+'" cy="'+u.y+'" r="15" fill="var(--accent)" opacity=".28"><animate attributeName="r" values="12;21;12" dur="2.4s" repeatCount="indefinite"/></circle>';
     svg+='<circle cx="'+u.x+'" cy="'+u.y+'" r="8.5" fill="var(--accent)" stroke="var(--surface)" stroke-width="3"/>';
+    // live position (navigation en cours)
+    if(nav){var lp=geoToXY(nav.pos.lat,nav.pos.lon);
+      svg+='<circle id="liveHalo" cx="'+lp.x+'" cy="'+lp.y+'" r="18" fill="#2f6df6" opacity=".22"><animate attributeName="r" values="14;24;14" dur="1.8s" repeatCount="indefinite"/></circle>';
+      svg+='<circle id="liveDot" cx="'+lp.x+'" cy="'+lp.y+'" r="10" fill="#2f6df6" stroke="#fff" stroke-width="3.5"/>';}
     // clickable hit areas -> set arrivée
     for(var k2 in N){var n2=N[k2];svg+='<circle cx="'+n2.x+'" cy="'+n2.y+'" r="26" fill="transparent" style="cursor:pointer" data-node="'+k2+'"></circle>';}
     svg+='</svg>';
@@ -400,6 +419,153 @@ button{font-family:inherit;cursor:pointer}
     return '<div class="map">'+svg+'<div class="maplabel">Départ <b>•</b> → arrivée <b>•</b> · '+day.track.length+' points</div></div>';
   }
 
+  /* ---- géoréférencement du domaine démo (vraies lat/lon) ---- */
+  var GEO={latA:45.4600,lonA:6.5800,ax:500,ay:708,M:4.2};
+  (function(){var cl=Math.cos(GEO.latA*Math.PI/180);for(var k in N){var n=N[k];var east=(n.x-GEO.ax)*GEO.M,north=(GEO.ay-n.y)*GEO.M;n.lat=GEO.latA+north/111320;n.lon=GEO.lonA+east/(111320*cl);}})();
+  function haversine(aLat,aLon,bLat,bLon){var R=6371000,p=Math.PI/180,dLat=(bLat-aLat)*p,dLon=(bLon-aLon)*p,la1=aLat*p,la2=bLat*p;var x=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(la1)*Math.cos(la2)*Math.sin(dLon/2)*Math.sin(dLon/2);return 2*R*Math.asin(Math.sqrt(x));}
+  function geoToXY(lat,lon){var cl=Math.cos(GEO.latA*Math.PI/180);return {x:GEO.ax+(lon-GEO.lonA)*111320*cl/GEO.M, y:GEO.ay-(lat-GEO.latA)*111320/GEO.M};}
+
+  /* ---- stations réelles (sortie du collecteur ; voir collector/) ---- */
+  var REALDOMAINS=[
+    {name:"Val Thorens",massif:"Alpes du Nord",area:"Les 3 Vallées",lat:45.2976,lon:6.5806,altMin:2300,altMax:3230},
+    {name:"Courchevel",massif:"Alpes du Nord",area:"Les 3 Vallées",lat:45.4154,lon:6.6342,altMin:1260,altMax:2738},
+    {name:"Méribel",massif:"Alpes du Nord",area:"Les 3 Vallées",lat:45.3960,lon:6.5658,altMin:1100,altMax:2952},
+    {name:"Les Menuires",massif:"Alpes du Nord",area:"Les 3 Vallées",lat:45.3230,lon:6.5340,altMin:1450,altMax:2850},
+    {name:"Tignes",massif:"Alpes du Nord",area:"Tignes · Val d'Isère",lat:45.4686,lon:6.9060,altMin:1550,altMax:3456},
+    {name:"Val d'Isère",massif:"Alpes du Nord",area:"Tignes · Val d'Isère",lat:45.4486,lon:6.9800,altMin:1785,altMax:3456},
+    {name:"La Plagne",massif:"Alpes du Nord",area:"Paradiski",lat:45.5069,lon:6.6775,altMin:1250,altMax:3250},
+    {name:"Les Arcs",massif:"Alpes du Nord",area:"Paradiski",lat:45.5720,lon:6.8280,altMin:1200,altMax:3226},
+    {name:"Chamonix-Mont-Blanc",massif:"Alpes du Nord",area:"Vallée de Chamonix",lat:45.9237,lon:6.8694,altMin:1035,altMax:3842},
+    {name:"Megève",massif:"Alpes du Nord",area:"Évasion Mont-Blanc",lat:45.8566,lon:6.6176,altMin:1113,altMax:2353},
+    {name:"La Clusaz",massif:"Alpes du Nord",area:"Aravis",lat:45.9047,lon:6.4236,altMin:1100,altMax:2600},
+    {name:"Le Grand-Bornand",massif:"Alpes du Nord",area:"Aravis",lat:45.9420,lon:6.4280,altMin:1000,altMax:2100},
+    {name:"Avoriaz",massif:"Alpes du Nord",area:"Portes du Soleil",lat:46.1922,lon:6.7736,altMin:1800,altMax:2466},
+    {name:"Les Gets",massif:"Alpes du Nord",area:"Portes du Soleil",lat:46.1583,lon:6.6697,altMin:1172,altMax:2002},
+    {name:"L'Alpe d'Huez",massif:"Alpes du Nord",area:"Grand Domaine de Ski",lat:45.0905,lon:6.0695,altMin:1250,altMax:3330},
+    {name:"Les Deux Alpes",massif:"Alpes du Nord",area:"Les 2 Alpes",lat:45.0109,lon:6.1247,altMin:1300,altMax:3600},
+    {name:"Serre Chevalier",massif:"Alpes du Sud",area:"Serre Chevalier Vallée",lat:44.9300,lon:6.5500,altMin:1200,altMax:2800},
+    {name:"Val Cenis",massif:"Alpes du Nord",area:"Haute-Maurienne",lat:45.2290,lon:6.9070,altMin:1300,altMax:2800},
+    {name:"Grand Tourmalet",massif:"Pyrénées",area:"La Mongie · Barèges",lat:42.9090,lon:0.1770,altMin:1400,altMax:2500},
+    {name:"Font-Romeu",massif:"Pyrénées",area:"Pyrénées 2000",lat:42.5020,lon:2.0400,altMin:1600,altMax:2213},
+    {name:"La Bresse-Hohneck",massif:"Vosges",area:"La Bresse",lat:48.0030,lon:6.9000,altMin:900,altMax:1350},
+    {name:"Super-Besse",massif:"Massif central",area:"Sancy",lat:45.5100,lon:2.8530,altMin:1300,altMax:1850},
+    {name:"Métabief",massif:"Jura",area:"Mont d'Or",lat:46.7700,lon:6.3550,altMin:1000,altMax:1430}
+  ];
+
+  /* ---- ponts Capacitor (repli web) ---- */
+  function capPlugin(name){return (window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins[name])||null;}
+  function notify(title,body){
+    var LN=capPlugin("LocalNotifications");
+    if(LN&&LN.schedule){try{LN.schedule({notifications:[{id:Date.now()%2000000000,title:title,body:body}]});return;}catch(e){}}
+    try{if(window.Notification&&Notification.permission==="granted"){new Notification(title,{body:body});return;}}catch(e){}
+  }
+  function requestPerms(){
+    var LN=capPlugin("LocalNotifications");if(LN&&LN.requestPermissions){try{LN.requestPermissions();}catch(e){}}
+    else if(window.Notification&&Notification.requestPermission&&Notification.permission==="default"){try{Notification.requestPermission();}catch(e){}}
+    var G=capPlugin("Geolocation");if(G&&G.requestPermissions){try{G.requestPermissions();}catch(e){}}
+  }
+  function getPosition(cb,err){
+    var G=capPlugin("Geolocation");
+    if(G&&G.getCurrentPosition){G.getCurrentPosition({enableHighAccuracy:true,timeout:15000}).then(function(p){cb(p.coords.latitude,p.coords.longitude);}).catch(err||function(){});return;}
+    if(navigator.geolocation){navigator.geolocation.getCurrentPosition(function(p){cb(p.coords.latitude,p.coords.longitude);},err||function(){},{enableHighAccuracy:true,timeout:15000});return;}
+    if(err)err();
+  }
+  function locate(){
+    geoState.busy=true;geoState.err=false;render();
+    getPosition(function(lat,lon){
+      geoState.me={lat:lat,lon:lon};geoState.busy=false;
+      var best=null;REALDOMAINS.forEach(function(d){var km=haversine(lat,lon,d.lat,d.lon)/1000;if(!best||km<best.km)best={d:d,km:km};});
+      geoState.near=best;render();
+    },function(){geoState.busy=false;geoState.err=true;render();});
+  }
+  function fmtKm(km){return km<1?Math.round(km*1000)+" m":km<10?km.toFixed(1)+" km":Math.round(km)+" km";}
+
+  /* ---- navigation guidée pas-à-pas ---- */
+  var nav=null, geoState={busy:false,near:null,me:null};
+  var NAV_RADIUS=100; // m : seuil de déclenchement des notifications
+  function turnAt(prevKey,curKey,nextKey){
+    var P=N[prevKey],C=N[curKey],Q=N[nextKey];
+    var inx=C.x-P.x,iny=C.y-P.y,outx=Q.x-C.x,outy=Q.y-C.y;
+    var cross=inx*outy-iny*outx,dot=inx*outx+iny*outy;
+    var ang=Math.atan2(cross,dot)*180/Math.PI; // y vers le bas : + = sens horaire = à droite
+    if(Math.abs(ang)<22)return "straight";
+    return ang>0?"right":"left";
+  }
+  function turnWord(t){return t==="right"?"à droite":t==="left"?"à gauche":"tout droit";}
+  function stepInstruction(i){
+    var e=nav.edges[i],w=nav.w;
+    if(i===0){
+      if(e.k==="piste")return {t:"Descends la "+e.n,s:DIFFLBL[e.d]+" · "+e.t+" min"};
+      if(e.k==="bus")return {t:"Prends la "+e.n,s:e.sub};
+      return {t:"Prends "+e.n,s:e.sub};
+    }
+    var prev=nav.edges[i-1],node=N[w[i]].name,turn=turnWord(turnAt(w[i-1],w[i],w[i+1]));
+    if(e.k==="piste")return {t:"En bas de la "+prev.n+", "+turn+" — prends la "+e.n,s:DIFFLBL[e.d]+" · "+e.t+" min"};
+    if(e.k==="bus")return {t:"À "+node+", prends la "+e.n,s:e.sub};
+    return {t:"À "+node+", prends "+e.n,s:e.sub};
+  }
+  function navBuild(){
+    var rt=route(state.from,state.to);if(!rt||!rt.length)return null;
+    var w=[state.from];rt.forEach(function(e){w.push(e.b);});
+    return {w:w,edges:rt,target:1,sim:false,watchId:null,simT:null,pos:{lat:N[state.from].lat,lon:N[state.from].lon},dist:null,lastInstr:null,nextPrev:null};
+  }
+  function navStart(sim){
+    requestPerms();
+    nav=navBuild();if(!nav){render();return;}
+    nav.sim=!!sim;
+    var s0=stepInstruction(0);nav.lastInstr=s0;notify("Skifaut — en route",s0.t);
+    if(sim)navSimStart();else navGpsStart();
+    render();window.scrollTo(0,0);
+  }
+  function navStop(){
+    if(nav){
+      if(nav.watchId!=null){var G=capPlugin("Geolocation");if(G&&G.clearWatch){try{G.clearWatch({id:nav.watchId});}catch(e){}}else{try{navigator.geolocation.clearWatch(nav.watchId);}catch(e){}}}
+      if(nav.simT)clearInterval(nav.simT);
+    }
+    nav=null;render();
+  }
+  function onPosition(lat,lon){
+    if(!nav)return;nav.pos={lat:lat,lon:lon};
+    var tn=N[nav.w[nav.target]];nav.dist=haversine(lat,lon,tn.lat,tn.lon);
+    if(nav.dist<=NAV_RADIUS){
+      if(nav.target>=nav.edges.length){notify("Skifaut — arrivée 🎿",N[state.to].name+" · tu es arrivé.");navStop();return;}
+      var s=stepInstruction(nav.target);nav.lastInstr=s;notify("Skifaut",s.t);nav.target++;
+    }
+    updateNavUI();
+  }
+  function navGpsStart(){
+    var G=capPlugin("Geolocation");
+    if(G&&G.watchPosition){try{G.watchPosition({enableHighAccuracy:true},function(p){if(p&&p.coords)onPosition(p.coords.latitude,p.coords.longitude);}).then(function(id){if(nav)nav.watchId=id;});}catch(e){}return;}
+    if(navigator.geolocation){try{nav.watchId=navigator.geolocation.watchPosition(function(p){onPosition(p.coords.latitude,p.coords.longitude);},function(){},{enableHighAccuracy:true,maximumAge:1000});}catch(e){}}
+  }
+  function navSimStart(){
+    nav.simT=setInterval(function(){
+      if(!nav){return;}
+      var tn=N[nav.w[Math.min(nav.target,nav.w.length-1)]],p=nav.pos,d=haversine(p.lat,p.lon,tn.lat,tn.lon),stepM=62;
+      if(d<=stepM)onPosition(tn.lat,tn.lon);
+      else{var f=stepM/d;onPosition(p.lat+(tn.lat-p.lat)*f,p.lon+(tn.lon-p.lon)*f);}
+    },520);
+  }
+  function navPanel(){
+    var m=nav.edges.length,done=nav.target-1,cur=nav.lastInstr||{t:"",s:""};
+    var nxt="";
+    if(nav.target<m){var ni=stepInstruction(nav.target);nxt='<div class="navnext">Ensuite · '+esc(ni.t)+'</div>';}
+    else nxt='<div class="navnext">Ensuite · arrivée à '+esc(N[state.to].name)+'</div>';
+    var dist=nav.dist==null?"—":(nav.dist>=1000?(nav.dist/1000).toFixed(1)+" km":Math.round(nav.dist)+" m");
+    return '<div class="navcard"><div class="navtop"><span class="navbadge">'+(nav.sim?"Simulation":"Navigation GPS")+'</span><span class="navprog">Étape '+Math.min(done+1,m)+' / '+m+'</span></div>'+
+      '<div class="navinstr" id="navInstr">'+esc(cur.t)+'</div>'+
+      '<div class="navsub">'+esc(cur.s||"")+'</div>'+
+      nxt+
+      '<div class="navfoot"><span class="navdist">Prochain point dans <b id="navDist">'+dist+'</b></span><button class="navstop" data-nav-stop>Arrêter</button></div></div>';
+  }
+  function updateNavUI(){
+    if(!nav)return;
+    var di=document.getElementById("navDist");if(di)di.textContent=nav.dist==null?"—":(nav.dist>=1000?(nav.dist/1000).toFixed(1)+" km":Math.round(nav.dist)+" m");
+    var ii=document.getElementById("navInstr");if(ii&&nav.lastInstr)ii.textContent=nav.lastInstr.t;
+    var dot=document.getElementById("liveDot"),halo=document.getElementById("liveHalo");
+    if(dot){var xy=geoToXY(nav.pos.lat,nav.pos.lon);dot.setAttribute("cx",xy.x);dot.setAttribute("cy",xy.y);if(halo){halo.setAttribute("cx",xy.x);halo.setAttribute("cy",xy.y);}}
+  }
+
   /* ---- views ---- */
   function optionList(sel){return Object.keys(N).map(function(k){return '<option value="'+k+'"'+(k===sel?" selected":"")+'>'+esc(N[k].name)+'</option>';}).join("");}
 
@@ -418,7 +584,9 @@ button{font-family:inherit;cursor:pointer}
   }
 
   function carte(){
-    var rt=route(state.from,state.to),h=renderMap();
+    var rt=route(state.from,state.to),h="";
+    if(nav)h+=navPanel();
+    h+=renderMap();
     h+='<div class="card">';
     h+='<div class="od"><div class="fields">'+
        '<div class="field"><span class="dot a"></span><div style="flex:1;min-width:0"><label>Départ</label><select id="from">'+optionList(state.from)+'</select></div></div>'+
@@ -443,6 +611,8 @@ button{font-family:inherit;cursor:pointer}
       var al=routeAlerts(rt);
       h+='<div class="nowline">Simulation · il est '+fmt(NOW)+'</div>';
       if(al.worst)h+='<div class="alert banner '+al.worst.lvl+'">'+warnIcon()+'<span><b>'+esc(al.worst.name)+'</b> '+al.worst.txt+'</span></div>';
+      if(!nav)h+='<div class="navactions"><button class="startbtn" data-nav-start="gps"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l12-7z"/></svg>Démarrer le parcours</button><button class="simbtn" data-nav-start="sim">Simuler</button></div>';
+      else h+='<div class="navactions"><button class="navstop wide" data-nav-stop>Arrêter la navigation</button></div>';
       h+='<ol class="steps">';
       h+='<li class="step"><span class="mk"><span class="disc" style="background:var(--accent)"></span></span><div class="bd"><div class="act">Départ · <span class="nm">'+esc(N[state.from].name)+'</span></div><div class="ln"><span class="time">'+N[state.from].alt+' m</span></div></div></li>';
       rt.forEach(function(e){
@@ -535,18 +705,34 @@ button{font-family:inherit;cursor:pointer}
     return h;
   }
 
+  var pinIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.3-7-11a7 7 0 0 1 14 0c0 4.7-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>';
   function domaines(){
-    var h='<div class="gps"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.3-7-11a7 7 0 0 1 14 0c0 4.7-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>'+
-      '<div style="flex:1;min-width:0"><div class="nm">Val Frisson</div><div class="mt">Position GPS · Savoie · à 1,2 km</div></div><span class="state on"><i></i>Détecté</span></div>';
-    h+='<div class="card"><button class="linkbtn done" disabled>Carte téléchargée · prête hors-ligne (14 Mo)</button>'+
-      '<div class="note">Skifaut couvre tous les domaines français, mais ne télécharge que celui où tu te trouves, repéré par le GPS. Tu peux aussi en ajouter un à la main avant de partir.</div></div>';
-    h+='<div class="card"><h2>Autres domaines</h2>';
-    DOMAINS.forEach(function(dm,i){
-      var done=state.dl["d"+i];
-      h+='<div class="rowitem"><div class="info"><div class="nm">'+esc(dm.n)+'</div><div class="mt">'+esc(dm.d)+' · '+dm.s+'</div></div>'+
-         '<button class="dl'+(done?" done":"")+'" data-dl="'+i+'">'+(done?"Téléchargé":"Télécharger")+'</button></div>';
+    var h='';
+    // carte GPS
+    if(geoState.me&&geoState.near){
+      var nd=geoState.near;
+      h+='<div class="gps">'+pinIcon+'<div style="flex:1;min-width:0"><div class="nm">'+esc(nd.d.name)+'</div><div class="mt">'+esc(nd.d.area)+' · '+esc(nd.d.massif)+' · à '+fmtKm(nd.km)+'</div></div><span class="state on"><i></i>Au plus près</span></div>';
+      h+='<div class="card"><button class="linkbtn" data-dl="r'+esc(nd.d.name)+'">Télécharger '+esc(nd.d.name)+' · hors-ligne</button>'+
+        '<div class="note">Position repérée par le GPS. Skifaut couvre tous les domaines français mais ne télécharge que celui où tu te trouves — ici le plus proche de ta position.</div></div>';
+    }else{
+      h+='<div class="gps">'+pinIcon+'<div style="flex:1;min-width:0"><div class="nm">Où es-tu ?</div><div class="mt">'+(geoState.err?"Position indisponible — autorise la localisation puis réessaie.":"Active le GPS pour détecter ton domaine.")+'</div></div></div>';
+      h+='<div class="card"><button class="linkbtn'+(geoState.busy?" done":"")+'" data-locate '+(geoState.busy?"disabled":"")+'>'+(geoState.busy?"Localisation en cours…":"Me localiser")+'</button>'+
+        '<div class="note">Skifaut utilise ta position pour trouver le domaine le plus proche et ne télécharger que celui-là.</div></div>';
+    }
+    // domaine de démonstration
+    h+='<div class="card"><h2>Démonstration</h2><div class="rowitem"><div class="info"><div class="nm">Val Frisson'+(geoState.me?' · à '+fmtKm(haversine(geoState.me.lat,geoState.me.lon,N.village.lat,N.village.lon)/1000):'')+'</div><div class="mt">Domaine fictif · itinéraire &amp; navigation détaillés</div></div><button class="dl done" disabled>Prêt hors-ligne</button></div>'+
+      '<div class="note">C\'est le domaine démo, avec le routage pas-à-pas complet. Les autres stations ci-dessous sont de vraies stations (identité &amp; position) ; leur plan détaillé sera produit par le collecteur.</div></div>';
+    // stations réelles
+    var list=REALDOMAINS.map(function(d){return d;});
+    if(geoState.me)list.sort(function(a,b){return haversine(geoState.me.lat,geoState.me.lon,a.lat,a.lon)-haversine(geoState.me.lat,geoState.me.lon,b.lat,b.lon);});
+    h+='<div class="card"><h2>Stations de ski françaises <span class="state"><i style="background:var(--muted)"></i>'+REALDOMAINS.length+'</span></h2>';
+    list.forEach(function(d,i){
+      var done=state.dl["r"+d.name],dist=geoState.me?' · à '+fmtKm(haversine(geoState.me.lat,geoState.me.lon,d.lat,d.lon)/1000):'';
+      h+='<div class="rowitem"><div class="info"><div class="nm">'+esc(d.name)+'</div><div class="mt">'+esc(d.area)+' · '+esc(d.massif)+' · '+d.altMin+'–'+d.altMax+' m'+dist+'</div></div>'+
+         '<button class="dl'+(done?" done":"")+'" data-dl="r'+esc(d.name)+'">'+(done?"Téléchargé":"Télécharger")+'</button></div>';
     });
     h+='</div>';
+    h+='<div class="note" style="padding:0 2px"><b>Données.</b> Stations agrégées par le collecteur Skifaut depuis OpenStreetMap, Wikidata, Météo-France et SkiRadar. Ouvertures &amp; enneigement en temps réel via les flux des stations.</div>';
     return h;
   }
 
@@ -595,8 +781,11 @@ button{font-family:inherit;cursor:pointer}
   }
 
   document.addEventListener("click",function(ev){
-    var t=ev.target.closest("[data-tab],[data-crit],[data-level],[data-node],[data-join],[data-dl],[data-day],[data-hcat],[data-fav],[data-go],[data-nav],[data-home-go],[data-home-edit],#swap,#share,#ft");
+    var t=ev.target.closest("[data-tab],[data-crit],[data-level],[data-node],[data-join],[data-dl],[data-day],[data-hcat],[data-fav],[data-go],[data-nav],[data-nav-start],[data-nav-stop],[data-locate],[data-home-go],[data-home-edit],#swap,#share,#ft");
     if(!t)return;var d=t.dataset;
+    if(t.hasAttribute("data-nav-start")){navStart(t.getAttribute("data-nav-start")==="sim");return;}
+    if(t.hasAttribute("data-nav-stop")){navStop();return;}
+    if(t.hasAttribute("data-locate")){locate();return;}
     if(d.tab){state.tab=d.tab;render();window.scrollTo(0,0);return;}
     if(d.hcat){state.hcat=d.hcat;render();return;}
     if(d.crit){state.crit=d.crit;render();return;}
@@ -610,7 +799,7 @@ button{font-family:inherit;cursor:pointer}
     if(t.hasAttribute("data-home-edit")){state.homeEdit=!state.homeEdit;render();return;}
     if(d.node){if(d.node!==state.from){state.to=d.node;}render();return;}
     if(d.join){state.to=d.join;state.tab="carte";render();window.scrollTo(0,0);return;}
-    if(d.dl!=null){state.dl["d"+d.dl]=!state.dl["d"+d.dl];render();return;}
+    if(d.dl!=null){state.dl[d.dl]=!state.dl[d.dl];render();return;}
     if(t.id==="swap"){var f=state.from;state.from=state.to;state.to=f;render();return;}
     if(t.id==="share"){state.share=!state.share;render();return;}
   });
@@ -623,6 +812,10 @@ button{font-family:inherit;cursor:pointer}
     if(ev.target.id==="q"){state.q=ev.target.value;filterRestos();persist();return;}
     if(ev.target.id==="hq"){state.hq=ev.target.value;filterHoraires();persist();return;}
   });
+
+  // Données stations produites par le collecteur (collector/) — on préfère
+  // le fichier normalisé s'il est présent, sinon la liste embarquée.
+  (function(){try{fetch("data/domains.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&j.domains&&j.domains.length){REALDOMAINS=j.domains.map(function(d){return {name:d.name,massif:d.massif,area:d.area,lat:d.lat,lon:d.lon,altMin:d.altMin,altMax:d.altMax};});if(state.tab==="domaines")render();}}).catch(function(){});}catch(e){}})();
 
   render();
 })();
