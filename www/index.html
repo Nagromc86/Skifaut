@@ -182,6 +182,19 @@ button{font-family:inherit;cursor:pointer}
 .navfoot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px}
 .navdist{font-size:.85rem}.navdist b{font-family:var(--disp);font-size:1.02rem}
 .navfoot .navstop{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.45);color:#fff}
+.topright{display:flex;align-items:center;gap:8px}
+.profbtn{position:relative;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--fg);display:inline-flex;align-items:center;justify-content:center;flex:none;cursor:pointer}
+.profbtn svg{width:21px;height:21px}
+.profbtn .dot{position:absolute;top:-1px;right:-1px;width:11px;height:11px;border-radius:50%;background:var(--rouge);border:2px solid var(--surface);display:none}
+.profbtn.has-upd .dot{display:block}
+.profhead{display:flex;align-items:center;gap:13px;margin-bottom:6px}
+.profav{width:46px;height:46px;border-radius:50%;background:var(--surface2);display:inline-flex;align-items:center;justify-content:center;font-size:1.5rem;flex:none}
+.toast{position:fixed;left:16px;right:16px;bottom:calc(86px + env(safe-area-inset-bottom));z-index:200;background:var(--fg);color:var(--surface);padding:12px 15px;border-radius:12px;font-size:.9rem;box-shadow:0 10px 26px rgba(0,0,0,.28);text-align:center;opacity:0;transform:translateY(10px);transition:opacity .2s,transform .2s;pointer-events:none}
+.toast.show{opacity:1;transform:none}
+.pfield{background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin-bottom:9px}
+.pfield label{display:block;font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+.pfield input{border:0;background:transparent;color:var(--fg);font-family:var(--body);font-size:.98rem;width:100%;min-width:0}
+.pfield input:focus{outline:none}
 .navbtn[aria-current="true"]{color:var(--accent)}
 .hidden{display:none}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -196,9 +209,15 @@ button{font-family:inherit;cursor:pointer}
       </div>
       <div class="sub">Tout ce qu'il faut quand il faut</div>
     </div>
-    <div class="dpill" id="dpill" title="Carte disponible hors-ligne">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-      <span>Val Frisson · hors-ligne</span>
+    <div class="topright">
+      <div class="dpill" id="dpill" title="Carte disponible hors-ligne">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+        <span>Val Frisson · hors-ligne</span>
+      </div>
+      <button class="profbtn" id="profBtn" data-tab="profil" aria-label="Profil et réglages">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.4"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>
+        <i class="dot"></i>
+      </button>
     </div>
   </header>
 
@@ -294,8 +313,9 @@ button{font-family:inherit;cursor:pointer}
     {n:"Grand Tourmalet",d:"Hautes-Pyrénées",s:"12 Mo"}
   ];
 
-  var state={tab:"carte",from:"lac",to:"sommet",crit:"rapide",level:"exp",share:true,dl:{},day:"auj",ft:true,q:"",fav:{r4:true},navette:true,home:"esserts",homeEdit:false,hcat:"remontees",hq:""};
+  var state={tab:"carte",from:"lac",to:"sommet",crit:"rapide",level:"exp",share:true,dl:{},day:"auj",ft:true,q:"",fav:{r4:true},navette:true,home:"esserts",homeEdit:false,hcat:"remontees",hq:"",prof:{}};
   try{var s=JSON.parse(localStorage.getItem("skifaut")||"{}");Object.assign(state,s);}catch(e){}
+  state.prof=Object.assign({passName:"",passRef:"",skiShop:"",skiRef:""},state.prof||{});
   function persist(){try{localStorage.setItem("skifaut",JSON.stringify(state));}catch(e){}}
 
   function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
@@ -479,6 +499,32 @@ button{font-family:inherit;cursor:pointer}
     },function(){geoState.busy=false;geoState.err=true;render();});
   }
   function fmtKm(km){return km<1?Math.round(km*1000)+" m":km<10?km.toFixed(1)+" km":Math.round(km)+" km";}
+
+  /* ---- mises à jour de l'appli (APK sur GitHub) ---- */
+  var NATIVE=!!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform());
+  var APP_VERSION="@@BUILD@@"; // remplacé au build par le hash du commit
+  var REPO="Nagromc86/Skifaut";
+  var APK_URL="https://github.com/"+REPO+"/releases/download/latest/Skifaut.apk";
+  var REL_API="https://api.github.com/repos/"+REPO+"/releases/tags/latest";
+  var appUpd={checking:false,avail:null,err:false,checked:false};
+  function devBuild(){return APP_VERSION.indexOf("@@")>=0;}
+  function openExternal(url){var a=document.createElement("a");a.href=url;a.target="_blank";a.rel="noopener";document.body.appendChild(a);a.click();setTimeout(function(){a.remove();},1000);}
+  var toastT=null;
+  function toast(msg){var el=document.getElementById("toast");if(!el){el=document.createElement("div");el.id="toast";el.className="toast";document.body.appendChild(el);}el.textContent=msg;requestAnimationFrame(function(){el.classList.add("show");});clearTimeout(toastT);toastT=setTimeout(function(){el.classList.remove("show");},3600);}
+  function markUpd(){var b=document.getElementById("profBtn");if(b)b.classList.toggle("has-upd",!!appUpd.avail);}
+  function checkUpdate(manual){
+    if(appUpd.checking)return;
+    if(navigator.onLine===false){if(manual)toast("Pas de connexion : mise à jour impossible.");return;}
+    appUpd.checking=true;appUpd.err=false;if(state.tab==="profil")render();
+    fetch(REL_API,{headers:{Accept:"application/vnd.github+json"}}).then(function(r){return r.ok?r.json():null;}).then(function(j){
+      appUpd.checking=false;appUpd.checked=true;
+      var rv=null;if(j){var m=(j.body||"").match(/build:([0-9a-f]+)/i);rv=m?m[1]:null;}
+      if(rv&&!devBuild()&&rv!==APP_VERSION){appUpd.avail={v:rv};if(manual)toast("Nouvelle version disponible.");}
+      else{appUpd.avail=null;if(manual)toast(devBuild()?"Build de développement — pas de mise à jour.":"L'appli est à jour.");}
+      markUpd();if(state.tab==="profil")render();
+    }).catch(function(){appUpd.checking=false;appUpd.err=true;if(manual)toast("Impossible de vérifier la mise à jour.");if(state.tab==="profil")render();});
+  }
+  function getApk(){openExternal(APK_URL);toast("Téléchargement de la mise à jour…");}
 
   /* ---- navigation guidée pas-à-pas ---- */
   var nav=null, geoState={busy:false,near:null,me:null};
@@ -761,7 +807,31 @@ button{font-family:inherit;cursor:pointer}
     var nr=document.getElementById("noresto");if(nr)nr.hidden=vis>0;
   }
 
-  var VIEWS={carte:carte,parcours:parcours,amis:amis,horaires:horaires,domaines:domaines,manger:manger};
+  function profil(){
+    var h='<div class="card"><div class="profhead"><div class="profav">⛷️</div><div style="min-width:0"><div class="nm" style="font-size:1.08rem">Mon profil</div><div class="mt">Skifaut · prototype</div></div></div>'+
+      '<div class="toggle"><div><div style="font-weight:600">Partager ma position</div><div class="mt" style="font-size:.78rem;color:var(--muted)">Visible par tes amis du domaine</div></div><button class="sw" id="share" aria-pressed="'+state.share+'" aria-label="Partager ma position"></button></div></div>';
+    // forfait
+    var P=state.prof;
+    h+='<div class="card"><h2>Mon forfait</h2>'+
+      '<div class="pfield"><label>Nom du forfait</label><input id="pf-passname" type="text" value="'+esc(P.passName)+'" placeholder="Ex. 3 Vallées · 6 jours" autocomplete="off"></div>'+
+      '<div class="pfield"><label>Référence / n° de carte</label><input id="pf-passref" type="text" value="'+esc(P.passRef)+'" placeholder="Ex. 01-2345-6789-0" autocomplete="off" inputmode="numeric"></div>'+
+      '<div class="note">Garde ton numéro de carte sous la main (rechargement en ligne, SAV, perte). Enregistré uniquement sur cet appareil.</div></div>';
+    // skis loués
+    h+='<div class="card"><h2>Mes skis loués</h2>'+
+      '<div class="pfield"><label>Magasin / modèle</label><input id="pf-skishop" type="text" value="'+esc(P.skiShop)+'" placeholder="Ex. Skiset · Rossignol Experience 80" autocomplete="off"></div>'+
+      '<div class="pfield"><label>Référence location</label><input id="pf-skiref" type="text" value="'+esc(P.skiRef)+'" placeholder="Ex. bon n° 4821" autocomplete="off"></div>'+
+      '<div class="note">Pratique en cas de casse, d\'échange de matériel ou de restitution.</div></div>';
+    var v=devBuild()?"préversion (dev)":APP_VERSION;
+    h+='<div class="card"><h2>Application</h2>'+
+      '<div class="rowitem"><div class="info"><div class="nm">Version</div><div class="mt">'+esc(v)+(appUpd.avail?' · mise à jour disponible':(appUpd.checked&&!devBuild()?' · à jour':''))+'</div></div></div>'+
+      '<div class="navactions" style="flex-wrap:wrap;margin-top:4px">'+
+        '<button class="simbtn" data-checkupd'+(appUpd.checking?' disabled':'')+'>'+(appUpd.checking?"Recherche…":"Rechercher une mise à jour")+'</button>'+
+        (appUpd.avail?'<button class="startbtn" data-getapk><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0 4.5-4.5M12 15l-4.5-4.5M5 20h14"/></svg>Télécharger la mise à jour</button>':'')+
+      '</div>'+
+      '<div class="note">'+(appUpd.avail?'Une fois téléchargé, ouvre le fichier <b>Skifaut.apk</b> pour l\'installer par-dessus : tes réglages sont conservés.':'L\'APK est hébergé sur GitHub. Le bouton vérifie s\'il existe une version plus récente, puis la télécharge.')+'</div></div>';
+    return h;
+  }
+  var VIEWS={carte:carte,parcours:parcours,amis:amis,horaires:horaires,domaines:domaines,manger:manger,profil:profil};
   var NAVITEMS=[
     {k:"carte",l:"Carte",i:'<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z"/><path d="M9 4v14M15 6v14"/>'},
     {k:"parcours",l:"Parcours",i:'<circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M8 16.5 16 7.5" stroke-dasharray="2.5 3"/>'},
@@ -781,11 +851,13 @@ button{font-family:inherit;cursor:pointer}
   }
 
   document.addEventListener("click",function(ev){
-    var t=ev.target.closest("[data-tab],[data-crit],[data-level],[data-node],[data-join],[data-dl],[data-day],[data-hcat],[data-fav],[data-go],[data-nav],[data-nav-start],[data-nav-stop],[data-locate],[data-home-go],[data-home-edit],#swap,#share,#ft");
+    var t=ev.target.closest("[data-tab],[data-crit],[data-level],[data-node],[data-join],[data-dl],[data-day],[data-hcat],[data-fav],[data-go],[data-nav],[data-nav-start],[data-nav-stop],[data-locate],[data-checkupd],[data-getapk],[data-home-go],[data-home-edit],#swap,#share,#ft");
     if(!t)return;var d=t.dataset;
     if(t.hasAttribute("data-nav-start")){navStart(t.getAttribute("data-nav-start")==="sim");return;}
     if(t.hasAttribute("data-nav-stop")){navStop();return;}
     if(t.hasAttribute("data-locate")){locate();return;}
+    if(t.hasAttribute("data-checkupd")){checkUpdate(true);return;}
+    if(t.hasAttribute("data-getapk")){getApk();return;}
     if(d.tab){state.tab=d.tab;render();window.scrollTo(0,0);return;}
     if(d.hcat){state.hcat=d.hcat;render();return;}
     if(d.crit){state.crit=d.crit;render();return;}
@@ -811,6 +883,8 @@ button{font-family:inherit;cursor:pointer}
   document.addEventListener("input",function(ev){
     if(ev.target.id==="q"){state.q=ev.target.value;filterRestos();persist();return;}
     if(ev.target.id==="hq"){state.hq=ev.target.value;filterHoraires();persist();return;}
+    var PF={"pf-passname":"passName","pf-passref":"passRef","pf-skishop":"skiShop","pf-skiref":"skiRef"};
+    if(PF[ev.target.id]){state.prof[PF[ev.target.id]]=ev.target.value;persist();return;}
   });
 
   // Données stations produites par le collecteur (collector/) — on préfère
@@ -818,5 +892,6 @@ button{font-family:inherit;cursor:pointer}
   (function(){try{fetch("data/domains.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&j.domains&&j.domains.length){REALDOMAINS=j.domains.map(function(d){return {name:d.name,massif:d.massif,area:d.area,lat:d.lat,lon:d.lon,altMin:d.altMin,altMax:d.altMax};});if(state.tab==="domaines")render();}}).catch(function(){});}catch(e){}})();
 
   render();
+  if(NATIVE)setTimeout(function(){checkUpdate(false);},5000);
 })();
 </script>

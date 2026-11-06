@@ -28,6 +28,13 @@ jobs:
       - name: Install JS dependencies
         run: npm ci
 
+      - name: Inject build id
+        run: |
+          SHA=$(git rev-parse --short HEAD)
+          sed -i "s/@@BUILD@@/$SHA/g" www/index.html
+          echo "BUILD_SHA=$SHA" >> "$GITHUB_ENV"
+          echo "Build id: $SHA"
+
       - name: Capacitor sync
         run: npx cap sync android
 
@@ -52,6 +59,6 @@ jobs:
         with:
           tag_name: latest
           name: Skifaut — dernier build
-          body: "APK de prototype (debug). Installez-le en autorisant les sources inconnues sur Android."
+          body: "APK de prototype (debug). Installez-le en autorisant les sources inconnues sur Android. build:${{ env.BUILD_SHA }}"
           prerelease: true
           files: Skifaut.apk
