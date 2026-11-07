@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-06T14:58:32.552Z",
+  "generatedAt": "2026-11-07T14:50:16.804Z",
   "version": 1,
   "attribution": [
     "OpenStreetMap (ODbL)",
@@ -26,7 +26,16 @@
       "snow": null,
       "website": null,
       "pistemap": null,
-      "graph": null
+      "graph": null,
+      "km": 75,
+      "lifts": 39,
+      "p": [
+        5,
+        27,
+        14,
+        6
+      ],
+      "site": "avoriaz.com"
     },
     {
       "id": "chamonix-mont-blanc",
@@ -45,7 +54,11 @@
       "snow": null,
       "website": null,
       "pistemap": null,
-      "graph": null
+      "graph": null,
+      "km": null,
+      "lifts": null,
+      "p": null,
+      "site": null
     },
     {
       "id": "courchevel",
@@ -64,7 +77,11 @@
       "snow": null,
       "website": null,
       "pistemap": null,
-      "graph": null
+      "graph": null,
+      "km": 150,
+      "lifts": 71,
+      "p": null,
+      "site": "courchevel.com"
     },
     {
       "id": "font-romeu",
@@ -83,7 +100,11 @@
       "snow": null,
       "website": null,
       "pistemap": null,
-      "graph": null
+      "graph": null,
+      "km": null,
+      "lifts": null,
+      "p": null,
+      "site": null
     },
     {
       "id": "grand-tourmalet",
@@ -102,7 +123,16 @@
       "snow": null,
       "website": null,
       "pistemap": null,
-      "graph": null
+      "graph": null,
+      "km": 100,
+      "lifts": 30,
+      "p": [
+        12,
+        23,
+        15,
+        4
+      ],
+      "site": "grand-tourmalet.com"
     },
     {
       "id": "l-alpe-d-huez",
@@ -121,7 +151,16 @@
       "snow": null,
       "website": null,
       "pistemap": null,
-      "graph": null
+      "graph": null,
+      "km": 250,
+      "lifts": 84,
+      "p": [
+        34,
+        31,
+        28,
+        18
+      ],
+      "site": "alpedhuez.com"
     },
     {
       "id": "la-bresse-hohneck",
@@ -140,7 +179,11 @@
       "snow": null,
       "website": null,
       "pistemap": null,
-      "graph": null
+      "graph": null,
+      "km": null,
+      "lifts": null,
+      "p": null,
+      "site": null
     },
     {
       "id": "la-clusaz",
@@ -159,7 +202,16 @@
       "snow": null,
       "website": null,
       "pistemap": null,
-      "graph": null
+      "graph": null,
+      "km": 125,
+      "lifts": 43,
+      "p": [
+        16,
+        31,
+        30,
+        8
+      ],
+      "site": "laclusaz.com"
     },
     {
       "id": "la-plagne",
@@ -178,7 +230,11 @@
       "snow": null,
       "website": null,
       "pistemap": null,
-      "graph": null
+      "graph": null,
+      "km": null,
+      "lifts": null,
+      "p": null,
+      "site": null
     },
     {
       "id": "le-grand-bornand",
@@ -197,7 +253,11 @@
       "snow": null,
       "website": null,
       "pistemap": null,
-      "graph": null
+      "graph": null,
+      "km": null,
+      "lifts": null,
+      "p": null,
+      "site": null
     },
     {
       "id": "les-arcs",
@@ -216,7 +276,16 @@
       "snow": null,
       "website": null,
       "pistemap": null,
-      "graph": null
+      "graph": null,
+      "km": 425,
+      "lifts": 85,
+      "p": [
+        12,
+        137,
+        79,
+        36
+      ],
+      "site": "lesarcs.com"
     },
     {
       "id": "les-deux-alpes",
@@ -235,7 +304,11 @@
       "snow": null,
       "website": null,
       "pistemap": null,
-      "graph": null
+      "graph": null,
+      "km": null,
+      "lifts": null,
+      "p": null,
+      "site": null
     },
     {
       "id": "les-gets",
@@ -254,7 +327,11 @@
       "snow": null,
       "website": null,
       "pistemap": null,
-      "graph": null
+      "graph": null,
+      "km": null,
+      "lifts": null,
+      "p": null,
+      "site": null
     },
     {
       "id": "les-menuires",
@@ -273,7 +350,11 @@
       "snow": null,
       "website": null,
       "pistemap": null,
-      "graph": null
+      "graph": null,
+      "km": 160,
+      "lifts": 34,
+      "p": null,
+      "site": "lesmenuires.com"
     },
     {
       "id": "megeve",
@@ -292,7 +373,16 @@
       "snow": null,
       "website": null,
       "pistemap": null,
-      "graph": null
+      "graph": null,
+      "km": 445,
+      "lifts": 41,
+      "p": [
+        28,
+        35,
+        52,
+        18
+      ],
+      "site": "megeve.com"
     },
     {
       "id": "meribel",
@@ -311,7 +401,11 @@
       "snow": null,
       "website": null,
       "pistemap": null,
-      "graph": null
+      "graph": null,
+      "km": 150,
+      "lifts": 50,
+      "p": null,
+      "site": "meribel.net"
     },
     {
       "id": "metabief",
@@ -330,7 +424,11 @@
       "snow": null,
       "website": null,
       "pistemap": null,
-      "graph": null
+      "graph": null,
+      "km": null,
+      "lifts": null,
+      "p": null,
+      "site": null
     },
     {
       "id": "serre-chevalier",
@@ -349,7 +447,16 @@
       "snow": null,
       "website": null,
       "pistemap": null,
-      "graph": null
+      "graph": null,
+      "km": 250,
+      "lifts": 70,
+      "p": [
+        15,
+        26,
+        28,
+        13
+      ],
+      "site": "serre-chevalier.com"
     },
     {
       "id": "super-besse",
@@ -368,7 +475,11 @@
       "snow": null,
       "website": null,
       "pistemap": null,
-      "graph": null
+      "graph": null,
+      "km": null,
+      "lifts": null,
+      "p": null,
+      "site": null
     },
     {
       "id": "tignes",
@@ -387,7 +498,16 @@
       "snow": null,
       "website": null,
       "pistemap": null,
-      "graph": null
+      "graph": null,
+      "km": 300,
+      "lifts": 43,
+      "p": [
+        21,
+        67,
+        41,
+        29
+      ],
+      "site": "tignes.net"
     },
     {
       "id": "val-cenis",
@@ -406,7 +526,11 @@
       "snow": null,
       "website": null,
       "pistemap": null,
-      "graph": null
+      "graph": null,
+      "km": null,
+      "lifts": null,
+      "p": null,
+      "site": null
     },
     {
       "id": "val-d-isere",
@@ -425,7 +549,11 @@
       "snow": null,
       "website": null,
       "pistemap": null,
-      "graph": null
+      "graph": null,
+      "km": 300,
+      "lifts": 45,
+      "p": null,
+      "site": "valdisere.com"
     },
     {
       "id": "val-thorens",
@@ -444,7 +572,16 @@
       "snow": null,
       "website": null,
       "pistemap": null,
-      "graph": null
+      "graph": null,
+      "km": 150,
+      "lifts": 33,
+      "p": [
+        10,
+        32,
+        25,
+        7
+      ],
+      "site": "valthorens.com"
     }
   ]
 }

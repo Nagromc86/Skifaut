@@ -1,4 +1,4 @@
-<title>Skifaut</title>
+<title>Skiffo</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@600;700&display=swap">
 <style>
@@ -144,6 +144,13 @@ button{font-family:inherit;cursor:pointer}
 .sw[aria-pressed="true"]::after{transform:translateX(19px)}
 .linkbtn{border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);border-radius:12px;padding:10px 15px;font-size:.9rem;font-weight:600;width:100%}
 .linkbtn.done{background:transparent;color:var(--vert);border-color:var(--vert)}
+.linkbtn.ghost{background:transparent;color:var(--accent);border-color:var(--line)}
+.dstats{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;margin-top:5px;font-size:.82rem;font-weight:700;color:var(--fg)}
+.dstats .pz{display:inline-flex;align-items:center;font-weight:700;color:var(--muted)}
+.dstats .pz .disc{width:9px;height:9px;border-radius:50%;display:inline-block;margin:0 3px 0 7px}
+.dsite{display:inline-block;margin-top:4px;font-size:.8rem;color:var(--accent);font-weight:600;text-decoration:none}
+.info.pickable{cursor:pointer;border-radius:10px;margin:-6px;padding:6px;transition:background .15s}
+.info.pickable:active{background:var(--accent-soft)}
 .dl{border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:999px;padding:6px 13px;font-size:.8rem;font-weight:600;flex:none}
 .dl.done{border-color:var(--line);color:var(--muted)}
 .gps{display:flex;align-items:center;gap:12px;background:var(--accent-soft);border-radius:14px;padding:13px;margin-bottom:14px}
@@ -212,7 +219,7 @@ button{font-family:inherit;cursor:pointer}
     <div>
       <div class="wordmark">
         <svg class="mk" viewBox="0 0 108 108" aria-hidden="true" fill="none" stroke="var(--accent)" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 56 L50 20 L80 56"/><path d="M50 20 L61 37 L50 45"/><path d="M59 45 C45 53 67 63 51 73 C41 79 57 89 43 97"/></svg>
-        <span>Ski<b>faut</b></span>
+        <span>Ski<b>ffo</b></span>
       </div>
       <div class="sub">Tout ce qu'il faut quand il faut</div>
     </div>
@@ -462,25 +469,25 @@ button{font-family:inherit;cursor:pointer}
 
   /* ---- stations réelles (sortie du collecteur ; voir collector/) ---- */
   var REALDOMAINS=[
-    {name:"Val Thorens",massif:"Alpes du Nord",area:"Les 3 Vallées",lat:45.2976,lon:6.5806,altMin:2300,altMax:3230},
-    {name:"Courchevel",massif:"Alpes du Nord",area:"Les 3 Vallées",lat:45.4154,lon:6.6342,altMin:1260,altMax:2738},
-    {name:"Méribel",massif:"Alpes du Nord",area:"Les 3 Vallées",lat:45.3960,lon:6.5658,altMin:1100,altMax:2952},
-    {name:"Les Menuires",massif:"Alpes du Nord",area:"Les 3 Vallées",lat:45.3230,lon:6.5340,altMin:1450,altMax:2850},
-    {name:"Tignes",massif:"Alpes du Nord",area:"Tignes · Val d'Isère",lat:45.4686,lon:6.9060,altMin:1550,altMax:3456},
-    {name:"Val d'Isère",massif:"Alpes du Nord",area:"Tignes · Val d'Isère",lat:45.4486,lon:6.9800,altMin:1785,altMax:3456},
+    {name:"Val Thorens",massif:"Alpes du Nord",area:"Les 3 Vallées",lat:45.2976,lon:6.5806,altMin:2300,altMax:3230,km:150,lifts:33,p:[10,32,25,7],site:"valthorens.com"},
+    {name:"Courchevel",massif:"Alpes du Nord",area:"Les 3 Vallées",lat:45.4154,lon:6.6342,altMin:1260,altMax:2738,km:150,lifts:71,site:"courchevel.com"},
+    {name:"Méribel",massif:"Alpes du Nord",area:"Les 3 Vallées",lat:45.3960,lon:6.5658,altMin:1100,altMax:2952,km:150,lifts:50,site:"meribel.net"},
+    {name:"Les Menuires",massif:"Alpes du Nord",area:"Les 3 Vallées",lat:45.3230,lon:6.5340,altMin:1450,altMax:2850,km:160,lifts:34,site:"lesmenuires.com"},
+    {name:"Tignes",massif:"Alpes du Nord",area:"Tignes · Val d'Isère",lat:45.4686,lon:6.9060,altMin:1550,altMax:3456,km:300,lifts:43,p:[21,67,41,29],site:"tignes.net"},
+    {name:"Val d'Isère",massif:"Alpes du Nord",area:"Tignes · Val d'Isère",lat:45.4486,lon:6.9800,altMin:1785,altMax:3456,km:300,lifts:45,site:"valdisere.com"},
     {name:"La Plagne",massif:"Alpes du Nord",area:"Paradiski",lat:45.5069,lon:6.6775,altMin:1250,altMax:3250},
-    {name:"Les Arcs",massif:"Alpes du Nord",area:"Paradiski",lat:45.5720,lon:6.8280,altMin:1200,altMax:3226},
+    {name:"Les Arcs",massif:"Alpes du Nord",area:"Paradiski",lat:45.5720,lon:6.8280,altMin:1200,altMax:3226,km:425,lifts:85,p:[12,137,79,36],site:"lesarcs.com"},
     {name:"Chamonix-Mont-Blanc",massif:"Alpes du Nord",area:"Vallée de Chamonix",lat:45.9237,lon:6.8694,altMin:1035,altMax:3842},
-    {name:"Megève",massif:"Alpes du Nord",area:"Évasion Mont-Blanc",lat:45.8566,lon:6.6176,altMin:1113,altMax:2353},
-    {name:"La Clusaz",massif:"Alpes du Nord",area:"Aravis",lat:45.9047,lon:6.4236,altMin:1100,altMax:2600},
+    {name:"Megève",massif:"Alpes du Nord",area:"Évasion Mont-Blanc",lat:45.8566,lon:6.6176,altMin:1113,altMax:2353,km:445,lifts:41,p:[28,35,52,18],site:"megeve.com"},
+    {name:"La Clusaz",massif:"Alpes du Nord",area:"Aravis",lat:45.9047,lon:6.4236,altMin:1100,altMax:2600,km:125,lifts:43,p:[16,31,30,8],site:"laclusaz.com"},
     {name:"Le Grand-Bornand",massif:"Alpes du Nord",area:"Aravis",lat:45.9420,lon:6.4280,altMin:1000,altMax:2100},
-    {name:"Avoriaz",massif:"Alpes du Nord",area:"Portes du Soleil",lat:46.1922,lon:6.7736,altMin:1800,altMax:2466},
+    {name:"Avoriaz",massif:"Alpes du Nord",area:"Portes du Soleil",lat:46.1922,lon:6.7736,altMin:1800,altMax:2466,km:75,lifts:39,p:[5,27,14,6],site:"avoriaz.com"},
     {name:"Les Gets",massif:"Alpes du Nord",area:"Portes du Soleil",lat:46.1583,lon:6.6697,altMin:1172,altMax:2002},
-    {name:"L'Alpe d'Huez",massif:"Alpes du Nord",area:"Grand Domaine de Ski",lat:45.0905,lon:6.0695,altMin:1250,altMax:3330},
+    {name:"L'Alpe d'Huez",massif:"Alpes du Nord",area:"Grand Domaine de Ski",lat:45.0905,lon:6.0695,altMin:1250,altMax:3330,km:250,lifts:84,p:[34,31,28,18],site:"alpedhuez.com"},
     {name:"Les Deux Alpes",massif:"Alpes du Nord",area:"Les 2 Alpes",lat:45.0109,lon:6.1247,altMin:1300,altMax:3600},
-    {name:"Serre Chevalier",massif:"Alpes du Sud",area:"Serre Chevalier Vallée",lat:44.9300,lon:6.5500,altMin:1200,altMax:2800},
+    {name:"Serre Chevalier",massif:"Alpes du Sud",area:"Serre Chevalier Vallée",lat:44.9300,lon:6.5500,altMin:1200,altMax:2800,km:250,lifts:70,p:[15,26,28,13],site:"serre-chevalier.com"},
     {name:"Val Cenis",massif:"Alpes du Nord",area:"Haute-Maurienne",lat:45.2290,lon:6.9070,altMin:1300,altMax:2800},
-    {name:"Grand Tourmalet",massif:"Pyrénées",area:"La Mongie · Barèges",lat:42.9090,lon:0.1770,altMin:1400,altMax:2500},
+    {name:"Grand Tourmalet",massif:"Pyrénées",area:"La Mongie · Barèges",lat:42.9090,lon:0.1770,altMin:1400,altMax:2500,km:100,lifts:30,p:[12,23,15,4],site:"grand-tourmalet.com"},
     {name:"Font-Romeu",massif:"Pyrénées",area:"Pyrénées 2000",lat:42.5020,lon:2.0400,altMin:1600,altMax:2213},
     {name:"La Bresse-Hohneck",massif:"Vosges",area:"La Bresse",lat:48.0030,lon:6.9000,altMin:900,altMax:1350},
     {name:"Super-Besse",massif:"Massif central",area:"Sancy",lat:45.5100,lon:2.8530,altMin:1300,altMax:1850},
@@ -541,10 +548,10 @@ button{font-family:inherit;cursor:pointer}
   }
   function getApk(){openExternal(APK_URL);toast("Téléchargement de la mise à jour…");}
   function shareApp(){
-    var txt="Skifaut — tout ce qu'il faut quand il faut 🎿 Installe l'appli :";
+    var txt="Skiffo — tout ce qu'il faut quand il faut 🎿 Installe l'appli :";
     var Sh=capPlugin("Share");
-    if(Sh&&Sh.share){Sh.share({title:"Skifaut",text:txt,url:APK_URL,dialogTitle:"Partager Skifaut"}).catch(function(){});return;}
-    if(navigator.share){navigator.share({title:"Skifaut",text:txt,url:APK_URL}).catch(function(){});return;}
+    if(Sh&&Sh.share){Sh.share({title:"Skiffo",text:txt,url:APK_URL,dialogTitle:"Partager Skiffo"}).catch(function(){});return;}
+    if(navigator.share){navigator.share({title:"Skiffo",text:txt,url:APK_URL}).catch(function(){});return;}
     try{navigator.clipboard.writeText(txt+" "+APK_URL);toast("Lien copié dans le presse-papiers.");}catch(e){toast(APK_URL);}
   }
 
@@ -581,7 +588,7 @@ button{font-family:inherit;cursor:pointer}
     requestPerms();
     nav=navBuild();if(!nav){render();return;}
     nav.sim=!!sim;
-    var s0=stepInstruction(0);nav.lastInstr=s0;notify("Skifaut — en route",s0.t);
+    var s0=stepInstruction(0);nav.lastInstr=s0;notify("Skiffo — en route",s0.t);
     if(sim)navSimStart();else navGpsStart();
     render();window.scrollTo(0,0);
   }
@@ -596,8 +603,8 @@ button{font-family:inherit;cursor:pointer}
     if(!nav)return;nav.pos={lat:lat,lon:lon};
     var tn=N[nav.w[nav.target]];nav.dist=haversine(lat,lon,tn.lat,tn.lon);
     if(nav.dist<=NAV_RADIUS){
-      if(nav.target>=nav.edges.length){notify("Skifaut — arrivée 🎿",N[state.to].name+" · tu es arrivé.");navStop();return;}
-      var s=stepInstruction(nav.target);nav.lastInstr=s;notify("Skifaut",s.t);nav.target++;
+      if(nav.target>=nav.edges.length){notify("Skiffo — arrivée 🎿",N[state.to].name+" · tu es arrivé.");navStop();return;}
+      var s=stepInstruction(nav.target);nav.lastInstr=s;notify("Skiffo",s.t);nav.target++;
     }
     updateNavUI();
   }
@@ -745,7 +752,7 @@ button{font-family:inherit;cursor:pointer}
     }
     h+='<div id="hnoresult" class="empty" hidden><b>Aucun résultat</b>Essaie un autre mot ou une autre catégorie.</div>';
     h+='</div>';
-    h+='<div class="note"><b>Collecteur Skifaut.</b> Chaque station publie son info à sa façon (page web, open-data, flux du domaine). Un collecteur type ETL récupère chaque source — pistes, remontées, navettes, restos, activités — et la ramène à un format commun. Mis à jour il y a 4 min.</div></div>';
+    h+='<div class="note"><b>Collecteur Skiffo.</b> Chaque station publie son info à sa façon (page web, open-data, flux du domaine). Un collecteur type ETL récupère chaque source — pistes, remontées, navettes, restos, activités — et la ramène à un format commun. Mis à jour il y a 4 min.</div></div>';
     return h;
   }
   function filterHoraires(){
@@ -774,33 +781,45 @@ button{font-family:inherit;cursor:pointer}
   }
 
   var pinIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.3-7-11a7 7 0 0 1 14 0c0 4.7-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>';
+  function domStats(d){
+    if(!d.km&&!d.lifts&&!d.p)return'';
+    var s='<div class="dstats">';
+    if(d.km)s+='<span>'+d.km+' km</span>';
+    if(d.lifts)s+='<span>'+d.lifts+' remontées</span>';
+    if(d.p)s+='<span class="pz"><i class="disc d-vert"></i>'+d.p[0]+'<i class="disc d-bleu"></i>'+d.p[1]+'<i class="disc d-rouge"></i>'+d.p[2]+'<i class="disc d-noir"></i>'+d.p[3]+'</span>';
+    s+='</div>';
+    if(d.site)s+='<a class="dsite" href="https://'+esc(d.site)+'" target="_blank" rel="noopener">'+esc(d.site)+' ↗</a>';
+    return s;
+  }
   function domaines(){
-    var h='';
-    // carte GPS
-    if(geoState.me&&geoState.near){
-      var nd=geoState.near;
-      h+='<div class="gps">'+pinIcon+'<div style="flex:1;min-width:0"><div class="nm">'+esc(nd.d.name)+'</div><div class="mt">'+esc(nd.d.area)+' · '+esc(nd.d.massif)+' · à '+fmtKm(nd.km)+'</div></div><span class="state on"><i></i>Au plus près</span></div>';
+    var h='',g=geoState;
+    // carte position / domaine
+    if(g.near){
+      var nd=g.near,lbl=nd.picked?"Domaine choisi":"Au plus près",sub=esc(nd.d.area)+' · '+esc(nd.d.massif)+(g.me&&nd.km!=null?' · à '+fmtKm(nd.km):'');
+      h+='<div class="gps">'+pinIcon+'<div style="flex:1;min-width:0"><div class="nm">'+esc(nd.d.name)+'</div><div class="mt">'+sub+'</div></div><span class="state on"><i></i>'+lbl+'</span></div>';
       h+='<div class="card"><button class="linkbtn" data-dl="r'+esc(nd.d.name)+'">Télécharger '+esc(nd.d.name)+' · hors-ligne</button>'+
-        '<div class="note">Position repérée par le GPS. Skifaut couvre tous les domaines français mais ne télécharge que celui où tu te trouves — ici le plus proche de ta position.</div></div>';
+        '<div class="note">Skiffo ne télécharge que ce domaine pour l\'avoir hors-ligne. Tu peux en choisir un autre ci-dessous.</div></div>';
     }else{
-      h+='<div class="gps">'+pinIcon+'<div style="flex:1;min-width:0"><div class="nm">Où es-tu ?</div><div class="mt">'+(geoState.err?"Position indisponible — autorise la localisation puis réessaie.":"Active le GPS pour détecter ton domaine.")+'</div></div></div>';
-      h+='<div class="card"><button class="linkbtn'+(geoState.busy?" done":"")+'" data-locate '+(geoState.busy?"disabled":"")+'>'+(geoState.busy?"Localisation en cours…":"Me localiser")+'</button>'+
-        '<div class="note">Skifaut utilise ta position pour trouver le domaine le plus proche et ne télécharger que celui-là.</div></div>';
+      h+='<div class="gps">'+pinIcon+'<div style="flex:1;min-width:0"><div class="nm">Où es-tu ?</div><div class="mt">'+(g.err?"Position indisponible — autorise la localisation puis réessaie.":"Active le GPS pour détecter ton domaine.")+'</div></div></div>';
+      h+='<div class="card"><button class="linkbtn'+(g.busy?" done":"")+'" data-locate '+(g.busy?"disabled":"")+'>'+(g.busy?"Localisation en cours…":"Me localiser")+'</button>'+
+        '<button class="linkbtn ghost" data-pick-toggle style="margin-top:8px">'+(g.picking?"Annuler":"Choisir mon domaine")+'</button>'+
+        '<div class="note">'+(g.picking?"Touche une station dans la liste ci-dessous pour la choisir.":"Repère ta position par GPS, ou choisis ton domaine à la main.")+'</div></div>';
     }
     // domaine de démonstration
-    h+='<div class="card"><h2>Démonstration</h2><div class="rowitem"><div class="info"><div class="nm">Val Frisson'+(geoState.me?' · à '+fmtKm(haversine(geoState.me.lat,geoState.me.lon,N.village.lat,N.village.lon)/1000):'')+'</div><div class="mt">Domaine fictif · itinéraire &amp; navigation détaillés</div></div><button class="dl done" disabled>Prêt hors-ligne</button></div>'+
-      '<div class="note">C\'est le domaine démo, avec le routage pas-à-pas complet. Les autres stations ci-dessous sont de vraies stations (identité &amp; position) ; leur plan détaillé sera produit par le collecteur.</div></div>';
+    h+='<div class="card"><h2>Démonstration</h2><div class="rowitem"><div class="info"><div class="nm">Val Frisson'+(g.me?' · à '+fmtKm(haversine(g.me.lat,g.me.lon,N.village.lat,N.village.lon)/1000):'')+'</div><div class="mt">Domaine fictif · itinéraire &amp; navigation détaillés</div></div><button class="dl done" disabled>Prêt hors-ligne</button></div>'+
+      '<div class="note">C\'est le domaine démo, avec le routage pas-à-pas complet. Les stations ci-dessous sont de vraies stations ; le collecteur commence à en remonter les données (km, remontées, pistes).</div></div>';
     // stations réelles
     var list=REALDOMAINS.map(function(d){return d;});
-    if(geoState.me)list.sort(function(a,b){return haversine(geoState.me.lat,geoState.me.lon,a.lat,a.lon)-haversine(geoState.me.lat,geoState.me.lon,b.lat,b.lon);});
+    if(g.me)list.sort(function(a,b){return haversine(g.me.lat,g.me.lon,a.lat,a.lon)-haversine(g.me.lat,g.me.lon,b.lat,b.lon);});
     h+='<div class="card"><h2>Stations de ski françaises <span class="state"><i style="background:var(--muted)"></i>'+REALDOMAINS.length+'</span></h2>';
-    list.forEach(function(d,i){
-      var done=state.dl["r"+d.name],dist=geoState.me?' · à '+fmtKm(haversine(geoState.me.lat,geoState.me.lon,d.lat,d.lon)/1000):'';
-      h+='<div class="rowitem"><div class="info"><div class="nm">'+esc(d.name)+'</div><div class="mt">'+esc(d.area)+' · '+esc(d.massif)+' · '+d.altMin+'–'+d.altMax+' m'+dist+'</div></div>'+
+    if(g.picking)h+='<div class="note" style="margin:0 0 9px;border-color:var(--accent);color:var(--accent)"><b>Choix du domaine</b> — touche une station pour la définir comme la tienne.</div>';
+    list.forEach(function(d){
+      var done=state.dl["r"+d.name],dist=g.me?' · à '+fmtKm(haversine(g.me.lat,g.me.lon,d.lat,d.lon)/1000):'';
+      h+='<div class="rowitem"><div class="info'+(g.picking?' pickable':'')+'"'+(g.picking?' data-pick="'+esc(d.name)+'"':'')+'><div class="nm">'+esc(d.name)+'</div><div class="mt">'+esc(d.area)+' · '+esc(d.massif)+' · '+d.altMin+'–'+d.altMax+' m'+dist+'</div>'+domStats(d)+'</div>'+
          '<button class="dl'+(done?" done":"")+'" data-dl="r'+esc(d.name)+'">'+(done?"Téléchargé":"Télécharger")+'</button></div>';
     });
     h+='</div>';
-    h+='<div class="note" style="padding:0 2px"><b>Données.</b> Stations agrégées par le collecteur Skifaut depuis OpenStreetMap, Wikidata, Météo-France et SkiRadar. Ouvertures &amp; enneigement en temps réel via les flux des stations.</div>';
+    h+='<div class="note" style="padding:0 2px"><b>Données.</b> Chiffres (km, remontées, pistes, site) récoltés par le collecteur Skiffo depuis les sources publiques des stations. Ouvertures &amp; enneigement en temps réel via leurs flux. Certaines stations sont encore en cours de collecte.</div>';
     return h;
   }
 
@@ -830,7 +849,7 @@ button{font-family:inherit;cursor:pointer}
   }
 
   function profil(){
-    var h='<div class="card"><div class="profhead"><div class="profav">⛷️</div><div style="min-width:0"><div class="nm" style="font-size:1.08rem">Mon profil</div><div class="mt">Skifaut · prototype</div></div></div>'+
+    var h='<div class="card"><div class="profhead"><div class="profav">⛷️</div><div style="min-width:0"><div class="nm" style="font-size:1.08rem">Mon profil</div><div class="mt">Skiffo · prototype</div></div></div>'+
       '<div class="toggle"><div><div style="font-weight:600">Partager ma position</div><div class="mt" style="font-size:.78rem;color:var(--muted)">Visible par tes amis du domaine</div></div><button class="sw" id="share" aria-pressed="'+state.share+'" aria-label="Partager ma position"></button></div></div>';
     // forfait
     var P=state.prof;
@@ -853,7 +872,7 @@ button{font-family:inherit;cursor:pointer}
       '<div class="note">'+(appUpd.avail?'Une fois téléchargé, ouvre le fichier <b>Skifaut.apk</b> pour l\'installer par-dessus : tes réglages sont conservés.':'L\'APK est hébergé sur GitHub. Le bouton vérifie s\'il existe une version plus récente, puis la télécharge.')+'</div></div>';
     // à propos
     h+='<div class="card"><h2>À propos</h2>'+
-      '<p class="about">Skifaut t\'accompagne sur tout le domaine — <b>tout ce qu\'il faut quand il faut</b> : te repérer, trouver le meilleur itinéraire d\'un point à un autre, suivre tes journées et celles de tes amis, consulter les horaires et savoir où te restaurer.</p>'+
+      '<p class="about">Skiffo t\'accompagne sur tout le domaine — <b>tout ce qu\'il faut quand il faut</b> : te repérer, trouver le meilleur itinéraire d\'un point à un autre, suivre tes journées et celles de tes amis, consulter les horaires et savoir où te restaurer.</p>'+
       '<ul class="guide">'+
         '<li><b>Carte</b> — ta position et l\'itinéraire optimal (quelle piste descendre, quelle remontée prendre), avec les alertes de fermeture.</li>'+
         '<li><b>Démarrer le parcours</b> — guidage pas-à-pas : une notification à chaque changement de piste ou de remontée.</li>'+
@@ -865,7 +884,7 @@ button{font-family:inherit;cursor:pointer}
       '</div>';
     // partager
     h+='<div class="card"><h2>Partager</h2>'+
-      '<div class="navactions"><button class="startbtn" data-share><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5 15.4 17.5M15.4 6.5 8.6 10.5"/></svg>Partager Skifaut</button></div>'+
+      '<div class="navactions"><button class="startbtn" data-share><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5 15.4 17.5M15.4 6.5 8.6 10.5"/></svg>Partager Skiffo</button></div>'+
       '<div class="note">Envoie l\'appli à tes potes de ski : le lien d\'installation de la dernière version.</div></div>';
     return h;
   }
@@ -889,11 +908,13 @@ button{font-family:inherit;cursor:pointer}
   }
 
   document.addEventListener("click",function(ev){
-    var t=ev.target.closest("[data-tab],[data-crit],[data-level],[data-node],[data-join],[data-dl],[data-day],[data-hcat],[data-fav],[data-go],[data-nav],[data-nav-start],[data-nav-stop],[data-locate],[data-checkupd],[data-getapk],[data-share],[data-home-go],[data-home-edit],#swap,#share,#ft");
+    var t=ev.target.closest("[data-tab],[data-crit],[data-level],[data-node],[data-join],[data-dl],[data-day],[data-hcat],[data-fav],[data-go],[data-nav],[data-nav-start],[data-nav-stop],[data-locate],[data-pick-toggle],[data-pick],[data-checkupd],[data-getapk],[data-share],[data-home-go],[data-home-edit],#swap,#share,#ft");
     if(!t)return;var d=t.dataset;
     if(t.hasAttribute("data-nav-start")){navStart(t.getAttribute("data-nav-start")==="sim");return;}
     if(t.hasAttribute("data-nav-stop")){navStop();return;}
     if(t.hasAttribute("data-locate")){locate();return;}
+    if(t.hasAttribute("data-pick-toggle")){geoState.picking=!geoState.picking;render();return;}
+    if(d.pick){var dom=REALDOMAINS.filter(function(x){return x.name===d.pick;})[0];if(dom){geoState.near={d:dom,km:geoState.me?haversine(geoState.me.lat,geoState.me.lon,dom.lat,dom.lon)/1000:null,picked:true};geoState.picking=false;render();window.scrollTo(0,0);}return;}
     if(t.hasAttribute("data-checkupd")){checkUpdate(true);return;}
     if(t.hasAttribute("data-getapk")){getApk();return;}
     if(t.hasAttribute("data-share")){shareApp();return;}
@@ -928,7 +949,7 @@ button{font-family:inherit;cursor:pointer}
 
   // Données stations produites par le collecteur (collector/) — on préfère
   // le fichier normalisé s'il est présent, sinon la liste embarquée.
-  (function(){try{fetch("data/domains.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&j.domains&&j.domains.length){REALDOMAINS=j.domains.map(function(d){return {name:d.name,massif:d.massif,area:d.area,lat:d.lat,lon:d.lon,altMin:d.altMin,altMax:d.altMax};});if(state.tab==="domaines")render();}}).catch(function(){});}catch(e){}})();
+  (function(){try{fetch("data/domains.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&j.domains&&j.domains.length){REALDOMAINS=j.domains.map(function(d){return {name:d.name,massif:d.massif,area:d.area,lat:d.lat,lon:d.lon,altMin:d.altMin,altMax:d.altMax,km:d.km,lifts:d.lifts,p:d.p,site:d.site};});if(state.tab==="domaines")render();}}).catch(function(){});}catch(e){}})();
 
   render();
   if(NATIVE)setTimeout(function(){checkUpdate(false);},5000);

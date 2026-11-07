@@ -63,6 +63,11 @@ function makeDomain(p) {
     website: p.website || null,
     pistemap: p.pistemap || null,
     graph: p.graph || null,
+    // Données récoltées (indicatives) affichées dans l'app
+    km: p.km != null ? Number(p.km) : null,
+    lifts: p.lifts != null ? Number(p.lifts) : null,
+    p: p.p || null,
+    site: p.site || null,
   };
 }
 

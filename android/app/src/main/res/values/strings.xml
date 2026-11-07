@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Skifaut</string>
-    <string name="title_activity_main">Skifaut</string>
+    <string name="app_name">Skiffo</string>
+    <string name="title_activity_main">Skiffo</string>
     <string name="package_name">fr.nagromc86.skifaut</string>
     <string name="custom_url_scheme">fr.nagromc86.skifaut</string>
 </resources>

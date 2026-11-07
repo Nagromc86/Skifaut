@@ -1,4 +1,4 @@
-name: Build Skifaut APK
+name: Build Skiffo APK
 
 on:
   push:
@@ -60,7 +60,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: latest
-          name: Skifaut — dernier build
+          name: Skiffo — dernier build
           body: "APK de prototype (debug). Installez-le en autorisant les sources inconnues sur Android. build:${{ env.BUILD_SHA }}"
           prerelease: true
           files: Skifaut.apk
