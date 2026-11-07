@@ -48,9 +48,12 @@ button{font-family:inherit;cursor:pointer}
 /* map */
 .map{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;margin-bottom:14px}
 .map svg{display:block;width:100%;height:auto}
-.maplabel{position:absolute;left:12px;top:12px;background:var(--surface);border:1px solid var(--line);
-  border-radius:10px;padding:6px 10px;font-size:.74rem;color:var(--muted);font-weight:600;max-width:60%}
-.maplabel b{color:var(--fg)}
+.maplabel{position:absolute;left:10px;bottom:10px;display:flex;align-items:center;gap:7px;background:rgba(10,20,30,.5);backdrop-filter:blur(5px);border-radius:999px;padding:5px 6px 5px 12px;font-size:.72rem;color:#fff;font-weight:600;max-width:56%}
+.maplabel b{color:#fff}
+.maplabel .x{display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:50%;background:rgba(255,255,255,.22);color:#fff;font-size:.9rem;line-height:1;cursor:pointer;flex:none}
+.mapctl{position:absolute;top:10px;right:10px;display:flex;gap:3px;background:rgba(10,20,30,.5);backdrop-filter:blur(5px);border-radius:999px;padding:3px}
+.mapctl button{border:0;background:transparent;color:#fff;font-size:.7rem;font-weight:700;padding:5px 10px;border-radius:999px;cursor:pointer;opacity:.72}
+.mapctl button[aria-pressed="true"]{background:#fff;color:#0d1b28;opacity:1}
 .legend{position:absolute;right:12px;bottom:12px;display:flex;gap:9px;background:var(--surface);
   border:1px solid var(--line);border-radius:10px;padding:6px 9px;font-size:.68rem;color:var(--muted);font-weight:600}
 .legend span{display:flex;align-items:center;gap:4px}
@@ -327,7 +330,7 @@ button{font-family:inherit;cursor:pointer}
     {n:"Grand Tourmalet",d:"Hautes-Pyrénées",s:"12 Mo"}
   ];
 
-  var state={tab:"carte",from:"lac",to:"sommet",crit:"rapide",level:"exp",share:true,dl:{},day:"auj",ft:true,q:"",fav:{r4:true},navette:true,home:"esserts",homeEdit:false,hcat:"remontees",hq:"",prof:{}};
+  var state={tab:"carte",from:"lac",to:"sommet",crit:"rapide",level:"exp",share:true,dl:{},day:"auj",ft:true,q:"",fav:{r4:true},navette:true,home:"esserts",homeEdit:false,hcat:"remontees",hq:"",prof:{},mapStyle:"plan",hintDismissed:false};
   try{var s=JSON.parse(localStorage.getItem("skifaut")||"{}");Object.assign(state,s);}catch(e){}
   state.prof=Object.assign({passName:"",passRef:"",skiShop:"",skiRef:""},state.prof||{});
   function persist(){try{localStorage.setItem("skifaut",JSON.stringify(state));}catch(e){}}
@@ -398,13 +401,44 @@ button{font-family:inherit;cursor:pointer}
     s+='<path d="M140 250 L112 290 L168 290 Z" fill="var(--snow)" opacity=".78"/>';
     return s;
   }
+  function satelliteBackdrop(){
+    var s='<defs><linearGradient id="sat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#33433a"/><stop offset="1" stop-color="#19211d"/></linearGradient></defs>';
+    s+='<rect width="1000" height="780" fill="url(#sat)"/>';
+    // roche sur les hauteurs
+    s+='<path d="M0 300 L150 170 L320 280 L470 150 L640 270 L820 160 L1000 280 L1000 470 L0 470 Z" fill="#514f49" opacity=".6"/>';
+    // champs de neige (sommets)
+    s+='<path d="M0 420 L140 250 L270 360 L400 220 L520 360 L660 240 L820 380 L1000 290 L1000 480 L0 480 Z" fill="#dde7ea" opacity=".85"/>';
+    // ombres de relief
+    s+='<path d="M400 220 L520 360 L462 360 L400 258 Z" fill="#000" opacity=".2"/>';
+    s+='<path d="M660 240 L820 380 L756 380 L660 286 Z" fill="#000" opacity=".17"/>';
+    s+='<path d="M140 250 L270 360 L214 360 L140 290 Z" fill="#000" opacity=".15"/>';
+    // forêts dans les vallées
+    s+='<path d="M0 470 C180 440 300 520 440 500 C600 478 760 540 1000 500 L1000 780 L0 780 Z" fill="#2b4a33" opacity=".92"/>';
+    s+='<path d="M0 575 C210 555 340 610 540 590 C740 570 880 615 1000 588 L1000 780 L0 780 Z" fill="#20391f" opacity=".9"/>';
+    return s;
+  }
+  function reliefBackdrop(){
+    var s='<defs><linearGradient id="rel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef3ee"/><stop offset="1" stop-color="#dde6dd"/></linearGradient></defs>';
+    s+='<rect width="1000" height="780" fill="url(#rel)"/>';
+    // étagement hypsométrique : vallée (vert) -> alpage (beige) -> sommets (clair)
+    s+='<path d="M0 470 L160 300 L300 400 L430 270 L560 400 L700 290 L860 420 L1000 340 L1000 780 L0 780 Z" fill="#cfe0c8" opacity=".8"/>';
+    s+='<path d="M0 420 L140 250 L270 360 L400 220 L520 360 L660 240 L820 380 L1000 290 L1000 500 L0 500 Z" fill="#e7dcc2" opacity=".85"/>';
+    s+='<path d="M140 250 L400 220 L660 240 L820 380 L660 300 L400 262 L270 330 Z" fill="#f4eee0" opacity=".9"/>';
+    // courbes de niveau (fines)
+    var cont=['M60 470 L190 320 L320 410 L440 300','M110 500 L250 360 L380 440 L470 340','M560 420 L690 310 L840 430 L1000 360','M520 470 L660 330 L800 450'];
+    cont.forEach(function(d){s+='<path d="'+d+'" fill="none" stroke="#9aa89a" stroke-width="1.4" opacity=".5"/>';});
+    return s;
+  }
+  function mapBackdrop(){
+    if(state.mapStyle==="satellite")return satelliteBackdrop();
+    if(state.mapStyle==="relief")return reliefBackdrop();
+    return '<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--sky1)"/><stop offset="1" stop-color="var(--sky2)"/></linearGradient></defs><rect width="1000" height="780" fill="url(#sky)"/>'+mountainBackdrop();
+  }
   function renderMap(){
     var rt=route(state.from,state.to),onRoute={};
     if(rt)rt.forEach(function(e){onRoute[e.id]=1;});
     var svg='<svg viewBox="0 0 1000 780" role="img" aria-label="Carte du domaine skiable">';
-    svg+='<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--sky1)"/><stop offset="1" stop-color="var(--sky2)"/></linearGradient></defs>';
-    svg+='<rect width="1000" height="780" fill="url(#sky)"/>';
-    svg+=mountainBackdrop();
+    svg+=mapBackdrop();
     // contour jaune de l'itinéraire (posé sous les pistes colorées)
     if(rt)rt.forEach(function(e){svg+='<path d="'+edgePath(e)+'" fill="none" stroke="var(--route)" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/>';});
     // pistes (couleur de difficulté), remontées (gris pointillé), navettes (violet pointillé)
@@ -435,8 +469,10 @@ button{font-family:inherit;cursor:pointer}
     // clickable hit areas -> set arrivée
     for(var k2 in N){var n2=N[k2];svg+='<circle cx="'+n2.x+'" cy="'+n2.y+'" r="26" fill="transparent" style="cursor:pointer" data-node="'+k2+'"></circle>';}
     svg+='</svg>';
-    return '<div class="map">'+svg+
-      '<div class="maplabel">Touche un point de la carte pour le choisir comme <b>arrivée</b></div>'+
+    var STYLES=[["plan","Plan"],["satellite","Satellite"],["relief","Relief"]];
+    var ctl='<div class="mapctl">'+STYLES.map(function(s){return '<button data-mapstyle="'+s[0]+'" aria-pressed="'+(state.mapStyle===s[0])+'">'+s[1]+'</button>';}).join("")+'</div>';
+    var hint=state.hintDismissed?'':'<div class="maplabel"><span>Touche un point → <b>arrivée</b></span><span class="x" data-hidehint aria-label="Masquer">×</span></div>';
+    return '<div class="map">'+svg+ctl+hint+
       '<div class="legend"><span><i style="background:var(--vert)"></i>V</span><span><i style="background:var(--bleu)"></i>B</span><span><i style="background:var(--rouge)"></i>R</span><span><i style="background:var(--noir)"></i>N</span><span><i style="background:var(--route)"></i>Trajet</span></div>'+
       '</div>';
   }
@@ -908,7 +944,7 @@ button{font-family:inherit;cursor:pointer}
   }
 
   document.addEventListener("click",function(ev){
-    var t=ev.target.closest("[data-tab],[data-crit],[data-level],[data-node],[data-join],[data-dl],[data-day],[data-hcat],[data-fav],[data-go],[data-nav],[data-nav-start],[data-nav-stop],[data-locate],[data-pick-toggle],[data-pick],[data-checkupd],[data-getapk],[data-share],[data-home-go],[data-home-edit],#swap,#share,#ft");
+    var t=ev.target.closest("[data-tab],[data-crit],[data-level],[data-node],[data-join],[data-dl],[data-day],[data-hcat],[data-fav],[data-go],[data-nav],[data-nav-start],[data-nav-stop],[data-locate],[data-pick-toggle],[data-pick],[data-mapstyle],[data-hidehint],[data-checkupd],[data-getapk],[data-share],[data-home-go],[data-home-edit],#swap,#share,#ft");
     if(!t)return;var d=t.dataset;
     if(t.hasAttribute("data-nav-start")){navStart(t.getAttribute("data-nav-start")==="sim");return;}
     if(t.hasAttribute("data-nav-stop")){navStop();return;}
@@ -929,7 +965,9 @@ button{font-family:inherit;cursor:pointer}
     if(d.nav!=null){state.navette=d.nav==="1";render();return;}
     if(t.hasAttribute("data-home-go")){if(state.home)state.to=state.home;state.homeEdit=false;render();return;}
     if(t.hasAttribute("data-home-edit")){state.homeEdit=!state.homeEdit;render();return;}
-    if(d.node){if(d.node!==state.from){state.to=d.node;}render();return;}
+    if(d.mapstyle){state.mapStyle=d.mapstyle;render();persist();return;}
+    if(t.hasAttribute("data-hidehint")){state.hintDismissed=true;render();persist();return;}
+    if(d.node){if(d.node!==state.from){state.to=d.node;}state.hintDismissed=true;render();persist();return;}
     if(d.join){state.to=d.join;state.tab="carte";render();window.scrollTo(0,0);return;}
     if(d.dl!=null){state.dl[d.dl]=!state.dl[d.dl];render();return;}
     if(t.id==="swap"){var f=state.from;state.from=state.to;state.to=f;render();return;}
