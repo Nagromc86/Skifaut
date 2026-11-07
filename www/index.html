@@ -9,7 +9,7 @@
   --accent:#0a97ab; --accent-ink:#ffffff; --accent-soft:#d3eef1;
   --vert:#2e9e54; --bleu:#2f6fe0; --rouge:#df3b3b; --noir:#141b24; --warn:#c9771f; --closed:#9fb0bf;
   --warn-bg:#fbeeda; --crit:#c62a2a; --crit-bg:#fbe0e0; --bus:#7a5cc0;
-  --sky1:#cfe6f2; --sky2:#eef6fb; --snow:#ffffff;
+  --sky1:#cfe6f2; --sky2:#eef6fb; --snow:#ffffff; --route:#f3c000; --rock:#aebccb; --tree:#3f7d52;
   --disp:"Barlow Semi Condensed",Impact,sans-serif; --body:"Barlow","Segoe UI",system-ui,sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
@@ -17,14 +17,14 @@
   --accent:#25c0d1; --accent-ink:#06222a; --accent-soft:#113640;
   --vert:#46c76a; --bleu:#5f95f3; --rouge:#ff5b5b; --noir:#aeb9c6; --warn:#eda24a; --closed:#55697b;
   --warn-bg:#3a2c16; --crit:#ff6b6b; --crit-bg:#3a1c1c; --bus:#a78bda;
-  --sky1:#12283b; --sky2:#0d1b28; --snow:#22384d;
+  --sky1:#12283b; --sky2:#0d1b28; --snow:#22384d; --route:#ffd63a; --rock:#2b4157; --tree:#2f6a46;
   color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0b1520; --surface:#132131; --surface2:#1c2d40; --fg:#e9f1f8; --muted:#90a6ba; --line:#283b4f;
   --accent:#25c0d1; --accent-ink:#06222a; --accent-soft:#113640;
   --vert:#46c76a; --bleu:#5f95f3; --rouge:#ff5b5b; --noir:#aeb9c6; --warn:#eda24a; --closed:#55697b;
   --warn-bg:#3a2c16; --crit:#ff6b6b; --crit-bg:#3a1c1c; --bus:#a78bda;
-  --sky1:#12283b; --sky2:#0d1b28; --snow:#22384d;
+  --sky1:#12283b; --sky2:#0d1b28; --snow:#22384d; --route:#ffd63a; --rock:#2b4157; --tree:#2f6a46;
   color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
@@ -375,32 +375,40 @@ button{font-family:inherit;cursor:pointer}
 
   /* ---- map ---- */
   function edgePath(e){var A=N[e.a],B=N[e.b];return "M"+A.x+" "+A.y+" L"+B.x+" "+B.y;}
+  function mountainBackdrop(){
+    var s='';
+    // crête lointaine
+    s+='<path d="M0 290 L150 180 L300 270 L470 150 L640 260 L820 160 L1000 270 L1000 440 L0 440 Z" fill="var(--rock)" opacity=".2"/>';
+    // massif principal enneigé
+    s+='<path d="M0 420 L140 250 L270 360 L400 220 L520 360 L660 240 L820 380 L1000 290 L1000 780 L0 780 Z" fill="var(--snow)" opacity=".55"/>';
+    // faces rocheuses (ombres de relief)
+    s+='<path d="M400 220 L520 360 L466 360 L400 262 Z" fill="var(--rock)" opacity=".17"/>';
+    s+='<path d="M660 240 L820 380 L758 380 L660 288 Z" fill="var(--rock)" opacity=".15"/>';
+    s+='<path d="M140 250 L270 360 L216 360 L140 292 Z" fill="var(--rock)" opacity=".13"/>';
+    // sommets enneigés
+    s+='<path d="M400 220 L366 266 L434 266 Z" fill="var(--snow)" opacity=".85"/>';
+    s+='<path d="M660 240 L628 284 L692 284 Z" fill="var(--snow)" opacity=".82"/>';
+    s+='<path d="M140 250 L112 290 L168 290 Z" fill="var(--snow)" opacity=".78"/>';
+    return s;
+  }
   function renderMap(){
     var rt=route(state.from,state.to),onRoute={};
     if(rt)rt.forEach(function(e){onRoute[e.id]=1;});
-    var al=rt&&rt.length?routeAlerts(rt):{per:{}};
     var svg='<svg viewBox="0 0 1000 780" role="img" aria-label="Carte du domaine skiable">';
     svg+='<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--sky1)"/><stop offset="1" stop-color="var(--sky2)"/></linearGradient></defs>';
     svg+='<rect width="1000" height="780" fill="url(#sky)"/>';
-    svg+='<path d="M0 300 L250 120 L430 260 L620 90 L1000 330 L1000 780 L0 780 Z" fill="var(--snow)" opacity=".55"/>';
-    // base edges
+    svg+=mountainBackdrop();
+    // contour jaune de l'itinéraire (posé sous les pistes colorées)
+    if(rt)rt.forEach(function(e){svg+='<path d="'+edgePath(e)+'" fill="none" stroke="var(--route)" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/>';});
+    // pistes (couleur de difficulté), remontées (gris pointillé), navettes (violet pointillé)
     E.forEach(function(e){
       if(e.k==="bus"&&e.a>e.b)return;
       var base=e.k==="lift"?"var(--closed)":e.k==="bus"?"var(--bus)":("var(--"+e.d+")");
       var cls=e.closed?"var(--closed)":base;
-      var op=e.closed?.45:(e.k==="bus"&&!state.navette?.4:(onRoute[e.id]?.25:.9));
-      var dash=e.k==="lift"?'stroke-dasharray="2 9" stroke-width="4"':e.k==="bus"?'stroke-dasharray="1.5 7" stroke-width="4"':'stroke-width="6"';
+      var op=e.closed?.5:(e.k==="bus"&&!state.navette?.4:.95);
+      var dash=e.k==="lift"?'stroke-dasharray="2 9" stroke-width="5"':e.k==="bus"?'stroke-dasharray="1.5 7" stroke-width="5"':'stroke-width="7"';
       svg+='<path d="'+edgePath(e)+'" fill="none" stroke="'+cls+'" '+dash+' stroke-linecap="round" opacity="'+op+'"/>';
     });
-    // route casing + line
-    if(rt){
-      rt.forEach(function(e){svg+='<path d="'+edgePath(e)+'" fill="none" stroke="var(--surface)" stroke-width="13" stroke-linecap="round"/>';});
-      rt.forEach(function(e){
-        var dash=e.k==="lift"?'stroke-dasharray="1 7"':e.k==="bus"?'stroke-dasharray="1 6"':'';
-        var col=al.per[e.id]?(al.per[e.id].lvl==="crit"?"var(--crit)":"var(--warn)"):"var(--accent)";
-        svg+='<path d="'+edgePath(e)+'" fill="none" stroke="'+col+'" stroke-width="8" '+dash+' stroke-linecap="round"/>';
-      });
-    }
     // lift stations (small squares) + junction nodes
     for(var k in N){
       var nd=N[k],isLift=E.some(function(e){return e.k==="lift"&&(e.a===k||e.b===k);});
@@ -422,7 +430,7 @@ button{font-family:inherit;cursor:pointer}
     svg+='</svg>';
     return '<div class="map">'+svg+
       '<div class="maplabel">Touche un point de la carte pour le choisir comme <b>arrivée</b></div>'+
-      '<div class="legend"><span><i style="background:var(--vert)"></i>V</span><span><i style="background:var(--bleu)"></i>B</span><span><i style="background:var(--rouge)"></i>R</span><span><i style="background:var(--noir)"></i>N</span></div>'+
+      '<div class="legend"><span><i style="background:var(--vert)"></i>V</span><span><i style="background:var(--bleu)"></i>B</span><span><i style="background:var(--rouge)"></i>R</span><span><i style="background:var(--noir)"></i>N</span><span><i style="background:var(--route)"></i>Trajet</span></div>'+
       '</div>';
   }
 
@@ -434,8 +442,8 @@ button{font-family:inherit;cursor:pointer}
     var svg='<svg viewBox="0 0 1000 780" role="img" aria-label="Parcours de la journée sur le domaine">';
     svg+='<defs><linearGradient id="skyb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--sky1)"/><stop offset="1" stop-color="var(--sky2)"/></linearGradient></defs>';
     svg+='<rect width="1000" height="780" fill="url(#skyb)"/>';
-    svg+='<path d="M0 300 L250 120 L430 260 L620 90 L1000 330 L1000 780 L0 780 Z" fill="var(--snow)" opacity=".55"/>';
-    E.forEach(function(e){svg+='<path d="'+edgePath(e)+'" fill="none" stroke="var(--line)" stroke-width="'+(e.k==="lift"?2:4)+'" opacity=".55"/>';});
+    svg+=mountainBackdrop();
+    E.forEach(function(e){svg+='<path d="'+edgePath(e)+'" fill="none" stroke="var(--line)" stroke-width="'+(e.k==="lift"?2:4)+'" opacity=".5"/>';});
     if(state.ft)FRIENDS.forEach(function(f){if(f.shareTracks&&f.track)svg+=trackPoly(f.track,f.c,true,5);});
     svg+=trackPoly(day.track,"var(--accent)",false,8);
     for(var k in N){var nd=N[k];svg+='<circle cx="'+nd.x+'" cy="'+nd.y+'" r="5" fill="var(--surface)" stroke="var(--muted)" stroke-width="2"/>';}
