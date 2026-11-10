@@ -245,6 +245,9 @@ button{font-family:inherit;cursor:pointer}
   <div class="navin" id="nav"></div>
 </nav>
 
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<script src="vendor/leaflet/leaflet.js"></script>
+<script src="real.js" charset="utf-8"></script>
 <script id="main">
 (function(){
   var N={
@@ -695,7 +698,9 @@ button{font-family:inherit;cursor:pointer}
   }
 
   function carte(){
+    if(window.SkiReal&&geoState.near&&geoState.near.d)return SkiReal.view(geoState.near.d);
     var rt=route(state.from,state.to),h="";
+    h+='<div class="note" style="margin:0 0 10px;border-color:var(--accent)"><b>Domaine de démonstration.</b> Choisis ta vraie station dans l\'onglet <b>Domaines</b> pour voir la carte réelle des pistes et remontées.</div>';
     if(nav)h+=navPanel();
     h+=renderMap();
     h+='<div class="card">';
@@ -940,7 +945,7 @@ button{font-family:inherit;cursor:pointer}
   }
   function render(){
     document.getElementById("view").innerHTML=VIEWS[state.tab]();
-    renderNav();if(state.tab==="manger")filterRestos();if(state.tab==="horaires")filterHoraires();persist();
+    renderNav();if(state.tab==="carte"&&window.SkiReal&&geoState.near&&geoState.near.d)SkiReal.mount(geoState.near.d);if(state.tab==="manger")filterRestos();if(state.tab==="horaires")filterHoraires();persist();
   }
 
   document.addEventListener("click",function(ev){
@@ -950,7 +955,7 @@ button{font-family:inherit;cursor:pointer}
     if(t.hasAttribute("data-nav-stop")){navStop();return;}
     if(t.hasAttribute("data-locate")){locate();return;}
     if(t.hasAttribute("data-pick-toggle")){geoState.picking=!geoState.picking;render();return;}
-    if(d.pick){var dom=REALDOMAINS.filter(function(x){return x.name===d.pick;})[0];if(dom){geoState.near={d:dom,km:geoState.me?haversine(geoState.me.lat,geoState.me.lon,dom.lat,dom.lon)/1000:null,picked:true};geoState.picking=false;render();window.scrollTo(0,0);}return;}
+    if(d.pick){var dom=REALDOMAINS.filter(function(x){return x.name===d.pick;})[0];if(dom){geoState.near={d:dom,km:geoState.me?haversine(geoState.me.lat,geoState.me.lon,dom.lat,dom.lon)/1000:null,picked:true};geoState.picking=false;try{localStorage.setItem('skiffo.domain',dom.name)}catch(e){}state.tab='carte';render();window.scrollTo(0,0);}return;}
     if(t.hasAttribute("data-checkupd")){checkUpdate(true);return;}
     if(t.hasAttribute("data-getapk")){getApk();return;}
     if(t.hasAttribute("data-share")){shareApp();return;}
@@ -989,6 +994,7 @@ button{font-family:inherit;cursor:pointer}
   // le fichier normalisé s'il est présent, sinon la liste embarquée.
   (function(){try{fetch("data/domains.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&j.domains&&j.domains.length){REALDOMAINS=j.domains.map(function(d){return {name:d.name,massif:d.massif,area:d.area,lat:d.lat,lon:d.lon,altMin:d.altMin,altMax:d.altMax,km:d.km,lifts:d.lifts,p:d.p,site:d.site};});if(state.tab==="domaines")render();}}).catch(function(){});}catch(e){}})();
 
+  try{var sdn=localStorage.getItem('skiffo.domain');var sdd=sdn&&REALDOMAINS.filter(function(x){return x.name===sdn})[0];if(sdd)geoState.near={d:sdd,km:null,picked:true};}catch(e){}
   render();
   if(NATIVE)setTimeout(function(){checkUpdate(false);},5000);
 })();
