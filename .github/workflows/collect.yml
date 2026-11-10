@@ -7,6 +7,9 @@ on:
         description: 'Domaines (ids séparés par des virgules, vide = tous)'
         required: false
         default: ''
+  push:
+    branches: [ main ]
+    paths: [ 'collector/graphs.js', '.github/workflows/collect.yml' ]
   schedule:
     - cron: '17 4 * * 1'
 
@@ -23,7 +26,10 @@ jobs:
         with:
           node-version: '20'
       - name: Graphes pistes et remontées (OpenStreetMap)
-        run: node collector/graphs.js ${{ github.event.inputs.only != '' && format('--only={0}', github.event.inputs.only) || '' }}
+        run: |
+          ONLY='${{ github.event.inputs.only }}'
+          if [ "${{ github.event_name }}" = "push" ]; then ONLY='val-thorens,tignes'; fi
+          node collector/graphs.js ${ONLY:+--only=$ONLY}
       - name: Commit des données
         run: |
           git config user.name "github-actions[bot]"
