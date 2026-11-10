@@ -19,7 +19,7 @@ permissions:
 jobs:
   collect:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 300
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -28,7 +28,6 @@ jobs:
       - name: Graphes pistes et remontées (OpenStreetMap)
         run: |
           ONLY='${{ github.event.inputs.only }}'
-          if [ "${{ github.event_name }}" = "push" ]; then ONLY='val-thorens,tignes'; fi
           node collector/graphs.js ${ONLY:+--only=$ONLY}
       - name: Commit des données
         run: |

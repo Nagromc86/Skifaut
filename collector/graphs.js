@@ -23,7 +23,7 @@ async function overpass(b) {
   for (let round = 0; round < 3; round++) {
     for (const ep of ENDPOINTS) {
       try {
-        const res = await fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'Skiffo-collector (github.com/Nagromc86/Skifaut)' }, body: 'data=' + encodeURIComponent(query(b)) });
+        const res = await fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'Skiffo-collector (github.com/Nagromc86/Skifaut)' }, body: 'data=' + encodeURIComponent(query(b)), signal: AbortSignal.timeout(240000) });
         if (res.ok) return res.json();
         err = new Error(`${ep} HTTP ${res.status}`);
       } catch (e) { err = e; }
